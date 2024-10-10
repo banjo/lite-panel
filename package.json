@@ -8,9 +8,11 @@
     "server:dev": "tsx watch src/index.ts",
     "ui:dev": "vite",
     "ui:build": "vite build",
-    "ui:preview": "vite preview"
+    "ui:preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@banjoanton/utils": "^0.1.87",
     "@hono/node-server": "^1.13.1",
     "@hono/zod-validator": "^0.4.1",
     "hono": "^4.6.3",

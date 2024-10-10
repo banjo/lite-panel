@@ -1,3 +1,4 @@
 import { Env } from "./env";
 
-export const isProduction = Env.NODE_ENV === "production";
+const env = Env.server();
+export const isProduction = env.NODE_ENV === "production";

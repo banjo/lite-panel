@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@banjoanton/utils':
+        specifier: ^0.1.87
+        version: 0.1.87
       '@hono/node-server':
         specifier: ^1.13.1
         version: 1.13.1(hono@4.6.3)
@@ -56,6 +59,9 @@ importers:
         version: 5.4.8(@types/node@22.7.5)
 
 packages:
+
+  '@banjoanton/utils@0.1.87':
+    resolution: {integrity: sha512-MiRuqVLZxCmjQx56NphDKUg1ZH3OCGIPieDguFRUeg+ZmUTSOBhsbJoMSXni1f9Xes8+6RGdYGZ9T1MBf8elRw==}
 
   '@esbuild/aix-ppc64@0.21.5':
     resolution: {integrity: sha512-1SDgH6ZSPTlggy1yI6+Dbkiz8xzpHJEVAlF/AM1tHPLsf5STom9rwtjE4hKAF20FfXXNTFqEYXyJNWh1GiZedQ==}
@@ -977,6 +983,9 @@ packages:
     resolution: {integrity: sha512-byy+U7gp+FVwmyzKPYhW2h5l3crpmGsxl7X2s8y43IgxvG4g3QZ6CffDtsNQy1WsmZpQbO+ybo0AlW7TY6DcBQ==}
     engines: {node: '>= 0.4'}
 
+  ohash@1.1.4:
+    resolution: {integrity: sha512-FlDryZAahJmEF3VR3w1KogSEdWX3WhA5GPakFx4J81kEAiHyLMpdLLElS8n8dfNadMgAne/MywcvmogzscVt4g==}
+
   onetime@5.1.2:
     resolution: {integrity: sha512-kbpaSSGJTWdAY5KPVeMOKXSrPtr8C8C7wodJbcsd51jRnmD+GZu8Y0VoU6Dm5Z4vWr0Ig/1NKuWRKf7j5aaYSg==}
     engines: {node: '>=6'}
@@ -1296,6 +1305,9 @@ packages:
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
 
+  uncrypto@0.1.3:
+    resolution: {integrity: sha512-Ql87qFHB3s/De2ClA9e0gsnS6zXG27SkTiSJwjCc9MebbfapQfuPzumMIUMi38ezPZVNFcHI9sUIepeQfw8J8Q==}
+
   undici-types@6.19.8:
     resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
@@ -1367,6 +1379,11 @@ packages:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
 snapshots:
+
+  '@banjoanton/utils@0.1.87':
+    dependencies:
+      ohash: 1.1.4
+      uncrypto: 0.1.3
 
   '@esbuild/aix-ppc64@0.21.5':
     optional: true
@@ -2208,6 +2225,8 @@ snapshots:
       has-symbols: 1.0.3
       object-keys: 1.1.1
 
+  ohash@1.1.4: {}
+
   onetime@5.1.2:
     dependencies:
       mimic-fn: 2.1.0
@@ -2567,6 +2586,8 @@ snapshots:
       has-bigints: 1.0.2
       has-symbols: 1.0.3
       which-boxed-primitive: 1.0.2
+
+  uncrypto@0.1.3: {}
 
   undici-types@6.19.8: {}
 
