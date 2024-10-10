@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "run-p ui:dev server:dev",
     "build": "./scripts/build.sh",
-    "preview": "node ./build/index.js",
+    "preview": "NODE_ENV=production node ./build/index.js",
     "server:build": "tsup",
     "server:dev": "tsx watch src/index.ts",
     "ui:dev": "vite",
@@ -12,9 +12,11 @@
   },
   "dependencies": {
     "@hono/node-server": "^1.13.1",
+    "@hono/zod-validator": "^0.4.1",
     "hono": "^4.6.3",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
