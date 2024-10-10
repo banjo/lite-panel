@@ -1,7 +1,10 @@
 {
-  "name": "hono-vite-jsx",
+  "name": "lite-panel",
   "scripts": {
     "dev": "run-p ui:dev server:dev",
+    "build": "./scripts/build.sh",
+    "preview": "node ./build/index.js",
+    "server:build": "tsup",
     "server:dev": "tsx watch src/index.ts",
     "ui:dev": "vite",
     "ui:build": "vite build",
@@ -19,7 +22,9 @@
     "@types/react-dom": "^18.3.0",
     "dotenv": "^16.4.5",
     "npm-run-all": "^4.1.5",
+    "tsup": "^8.3.0",
     "tsx": "^4.19.1",
+    "typescript": "^5.6.3",
     "vite": "^5.4.8"
   }
 }
