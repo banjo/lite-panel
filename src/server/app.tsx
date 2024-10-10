@@ -3,8 +3,9 @@ import { Hono } from "hono";
 import { logger } from "hono/logger";
 import { api } from "./api/api";
 import { basicAuth } from "hono/basic-auth";
+import { cors } from "hono/cors";
 
-export const app = new Hono().route("/api", api);
+export const app = new Hono().use(cors()).route("/api", api);
 
 app.use(logger());
 
