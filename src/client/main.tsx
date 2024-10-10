@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import "./style.css";
 
 import { hc } from "hono/client";
 import type { AppType } from "../server/app";
@@ -20,7 +21,7 @@ function Counter() {
     run();
   }, []);
   return (
-    <div>
+    <div className="bg-red-300">
       <p>Counter: {count}</p>
       <button type="button" onClick={() => setCount(count + 1)}>
         Increment
