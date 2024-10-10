@@ -25,11 +25,23 @@ const allServer = () => {
     return process.env;
 };
 
+const logLevelSchema = z
+    .union([
+        z.literal("trace"),
+        z.literal("debug"),
+        z.literal("info"),
+        z.literal("warn"),
+        z.literal("error"),
+    ])
+    .default("info")
+    .optional();
+
 const ServerEnvSchema = z.object({
     PORT: z.coerce.number().min(1000),
     NODE_ENV: z
         .union([z.literal("development"), z.literal("testing"), z.literal("production")])
         .default("development"),
+    LOG_LEVEL: logLevelSchema,
 });
 
 const server = () => {
@@ -47,6 +59,7 @@ const server = () => {
 
 const ClientEnvSchema = z.object({
     VITE_PORT: z.coerce.number().min(1000),
+    VITE_LOG_LEVEL: logLevelSchema,
 });
 
 const client = () => {
