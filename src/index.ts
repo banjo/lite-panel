@@ -8,9 +8,9 @@ const env = Env.server();
 export const port = env.PORT;
 
 console.log(
-  `Server is running on ${isProduction ? "production" : "development"} on http://localhost:${port}`,
+    `Server is running on ${isProduction ? "production" : "development"} on http://localhost:${port}`
 );
 serve({
-  fetch: app.fetch,
-  port,
+    fetch: app.fetch,
+    port,
 });

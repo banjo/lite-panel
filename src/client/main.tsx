@@ -10,28 +10,28 @@ const env = Env.client();
 const client = hc<AppType>(`http://localhost:${env.VITE_PORT}`);
 
 function Counter() {
-  const [count, setCount] = useState(0);
+    const [count, setCount] = useState(0);
 
-  useEffect(() => {
-    const run = async () => {
-      const t = await client.api.hello.$get().then((r) => r.json());
-      console.log(t.message);
-    };
+    useEffect(() => {
+        const run = async () => {
+            const t = await client.api.hello.$get().then(r => r.json());
+            console.log(t.message);
+        };
 
-    run();
-  }, []);
-  return (
-    <div className="bg-red-300">
-      <p>Counter: {count}</p>
-      <button type="button" onClick={() => setCount(count + 1)}>
-        Increment
-      </button>
-    </div>
-  );
+        run();
+    }, []);
+    return (
+        <div className="bg-red-300">
+            <p>Counter: {count}</p>
+            <button type="button" onClick={() => setCount(count + 1)}>
+                Increment
+            </button>
+        </div>
+    );
 }
 
 function App() {
-  return <Counter />;
+    return <Counter />;
 }
 
 const domNode = document.getElementById("root");

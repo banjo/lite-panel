@@ -11,39 +11,36 @@ export const app = new Hono().use(cors()).route("/api", api);
 app.use(logger());
 
 app.use(
-  "/*",
-  serveStatic({
-    rewriteRequestPath: (path) => `./dist${path}`,
-  }),
+    "/*",
+    serveStatic({
+        rewriteRequestPath: path => `./dist${path}`,
+    })
 );
 
 if (isProduction) {
-  app.get("*", (c) => {
-    return c.html(
-      renderToString(
-        <html>
-          <head>
-            <meta charSet="utf-8" />
-            <meta
-              content="width=device-width, initial-scale=1"
-              name="viewport"
-            />
-            <title>Lite panel</title>
-            <script type="module" src="/client.js"></script>
-          </head>
-          <body>
-            <div id="root"></div>
-          </body>
-        </html>,
-      ),
-    );
-  });
+    app.get("*", c => {
+        return c.html(
+            renderToString(
+                <html>
+                    <head>
+                        <meta charSet="utf-8" />
+                        <meta content="width=device-width, initial-scale=1" name="viewport" />
+                        <title>Lite panel</title>
+                        <script type="module" src="/client.js"></script>
+                    </head>
+                    <body>
+                        <div id="root"></div>
+                    </body>
+                </html>
+            )
+        );
+    });
 }
 
 if (!isProduction) {
-  app.use("/*", async (c) => {
-    return c.redirect("/");
-  });
+    app.use("/*", async c => {
+        return c.redirect("/");
+    });
 }
 
 export type AppType = typeof app;
