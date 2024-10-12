@@ -1,8 +1,8 @@
 import { FC, ReactNode } from "react";
-import { Link } from "react-router-dom";
 import { Badge } from "../badge";
 import { IconType } from "../icons";
 import { Tooltip } from "../tooltip";
+import { Link } from "@tanstack/react-router";
 
 type ItemProps = {
     title: string;
@@ -12,7 +12,7 @@ type ItemProps = {
     selected: boolean;
     highlight?: boolean;
     notification?: ReactNode;
-    notificationTooltip: string;
+    notificationTooltip?: string;
     onClick?: () => void;
 };
 
@@ -53,7 +53,7 @@ export const Item: FC<ItemProps> = ({
                 </Tooltip>
             </div>
 
-            <Badge className="" show={Boolean(notification)} tooltip={notificationTooltip}>
+            <Badge className="" show={Boolean(notification)} tooltip={notificationTooltip ?? ""}>
                 {notification}
             </Badge>
         </Link>
