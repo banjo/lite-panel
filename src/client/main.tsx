@@ -1,14 +1,7 @@
-import { useState } from "react";
-import "./style.css";
-
 import { useQuery } from "@tanstack/react-query";
-import { hc } from "hono/client";
-import type { AppType } from "../server/app";
-import { Env } from "../utils/env";
+import { useState } from "react";
 import { FetchService } from "./common/services/fetch-service";
-
-const env = Env.client();
-const client = hc<AppType>(`http://localhost:${env.VITE_PORT}`);
+import { client } from "./client";
 
 export const Counter = () => {
     const [count, setCount] = useState(0);
