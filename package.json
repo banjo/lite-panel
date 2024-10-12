@@ -17,9 +17,10 @@
     },
     "dependencies": {
         "@banjoanton/prettier-config": "^0.1.11",
-        "@banjoanton/utils": "^0.1.87",
+        "@banjoanton/utils": "^0.1.92",
         "@hono/node-server": "^1.13.1",
         "@hono/zod-validator": "^0.4.1",
+        "execa": "^9.4.0",
         "hono": "^4.6.3",
         "pino": "^9.4.0",
         "pino-pretty": "^11.2.2",

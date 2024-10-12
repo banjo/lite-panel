@@ -14,8 +14,7 @@ function Counter() {
 
     useEffect(() => {
         const run = async () => {
-            const t = await client.api.hello.$get().then(r => r.json());
-            console.log(t.message);
+            const t = await client.api.hello.$get().then(d => d.json());
         };
 
         run();
