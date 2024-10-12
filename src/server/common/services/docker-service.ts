@@ -4,10 +4,10 @@ type DockerShellProps = {
     path: string;
 };
 
-const start = async ({ path }: DockerShellProps) =>
+const startCompose = async ({ path }: DockerShellProps) =>
     ShellService.exec(`docker compose up -d`, { path });
 
-const stop = async ({ path }: DockerShellProps) =>
+const stopCompose = async ({ path }: DockerShellProps) =>
     ShellService.exec(`docker compose down --remove-orphans`, { path });
 
-export const DockerService = { start, stop };
+export const DockerShellService = { startCompose, stopCompose };

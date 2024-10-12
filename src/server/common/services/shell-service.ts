@@ -1,5 +1,6 @@
 import { createLogger } from "@/utils/logger";
-import { AsyncResultType, isEmpty, Result } from "@banjoanton/utils";
+import { Result } from "@/utils/result";
+import { AsyncResultType, isEmpty } from "@banjoanton/utils";
 import { execa, ExecaError } from "execa";
 
 const logger = createLogger("shell-service");

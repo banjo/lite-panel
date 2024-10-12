@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { DockerService } from "@/server/common/services/docker-service";
+import { DockerShellService } from "@/server/common/services/docker-service";
 import { ErrorResponse, SuccessResponse } from "../controller-model";
 
 const dockerStartSchema = z.object({
@@ -11,7 +11,7 @@ const dockerStartSchema = z.object({
 export const dockerController = new Hono()
     .post("/start", zValidator("json", dockerStartSchema), async c => {
         const { path } = c.req.valid("json");
-        const result = await DockerService.stop({ path });
+        const result = await DockerShellService.stopCompose({ path });
 
         if (!result.success) {
             return ErrorResponse(c, { message: result.message });
