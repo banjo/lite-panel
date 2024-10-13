@@ -8,14 +8,17 @@ A simple UI to control your self hosted VPS.
 # Install dependencies
 pnpm install
 
-# Start development server
-pnpm dev
-
 # allow scripts to run
 chmod +x ./scripts/*
 
+# Generate prisma client
+pnpm db:generate
+
 # Run the init script for local development
 ./scripts/init-dev-files.sh
+
+# Start development server
+pnpm dev
 ```
 
 This is supposed to be run on a ubuntu server. The `init-dev-files.sh` file will mock the server environment on your local machine. Use the dev flag `NODE_ENV=development` to allow the server to run on your local machine.

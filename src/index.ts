@@ -15,7 +15,7 @@ const main = async () => {
     await InitService.initServer();
 
     logger.info(
-        `🚀 Server is running on ${isProduction ? "production" : "development"} on http://localhost:${port}`
+        `🚀 Server is running in ${isProduction ? "production" : "development"} on http://localhost:${port}`
     );
     serve({
         fetch: app.fetch,
