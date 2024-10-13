@@ -44,4 +44,5 @@ To develop UI, use Vite port `5173` locally. Do not use the default port `3009` 
     -   Install dependencies
     -   Start the database
     -   Setup the caddy integration
+        -   Add comment to caddyfile, all changes will be made below the header and above the footer of the comment, replacing the existing content.
     -   Start the server

@@ -6,6 +6,8 @@ import { findUpSync } from "find-up";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
+import { App } from "../models/app-model";
+import { CaddyTextService } from "./caddy-text-service";
 
 const logger = createLogger("directory-service");
 
@@ -18,7 +20,7 @@ if (!packageJsonPath) {
 }
 const packageJsonDir = path.dirname(packageJsonPath);
 
-const DEVELOPMENT_DIRECTORY = path.join(packageJsonDir, ".dev-files");
+export const DEVELOPMENT_DIRECTORY = path.join(packageJsonDir, ".dev-files");
 const PRODUCTION_DIRECTORY = "/srv/.lite-panel";
 
 const DEFAULT_DIRECTORY = isProduction ? PRODUCTION_DIRECTORY : DEVELOPMENT_DIRECTORY;
@@ -30,14 +32,24 @@ const appsPath = () => APPS_DIRECTORY;
 const serverPath = () => SERVER_DIRECTORY;
 const getAppPath = (appName: string) => path.join(APPS_DIRECTORY, appName);
 
-const createAppDirectory = async (appName: string) => {
-    const appPath = path.join(APPS_DIRECTORY, appName);
+const createAppDirectory = async (app: App) => {
+    const appPath = getAppPath(app.name);
+
+    const exists = await fs
+        .access(appPath, fs.constants.F_OK)
+        .then(() => true)
+        .catch(() => false);
+
+    if (exists) {
+        return Result.ok(appPath);
+    }
+
     const [_, error] = await wrapAsync(async () => {
         return await fs.mkdir(appPath, { recursive: true });
     });
 
     if (error) {
-        logger.error({ error, appName }, "Failed to create app directory");
+        logger.error({ error, appName: app }, "Failed to create app directory");
         return Result.error(error.message);
     }
 
