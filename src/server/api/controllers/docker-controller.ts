@@ -6,6 +6,7 @@ import { ErrorResponse, SuccessResponse } from "../controller-model";
 import { CaddyService } from "@/server/common/services/caddy-service";
 import { DirectoryService } from "@/server/common/services/directory-service";
 import { App } from "@/server/common/models/app-model";
+import { AppService } from "@/server/common/services/app-service";
 
 const dockerStartSchema = z.object({
     path: z.string(),
@@ -16,12 +17,14 @@ export const dockerController = new Hono()
         const { path } = c.req.valid("json");
         // const result = await DockerShellService.stopCompose({ path });
 
-        const app: App = {
+        const app = App.from({
             name: "test",
             directory: DirectoryService.getAppPath("test"),
             domain: "test.com",
             port: 3000,
-        };
+        });
+
+        await AppService.create(app);
 
         const app2: App = {
             name: "test2",
@@ -29,12 +32,8 @@ export const dockerController = new Hono()
             domain: "test2.com",
             port: 3001,
         };
-        const directory = await DirectoryService.createAppDirectory(app);
-        const config = await CaddyService.addConfigToPath(app);
 
-        const directory2 = await DirectoryService.createAppDirectory(app2);
-        const config2 = await CaddyService.addConfigToPath(app2);
-        const result = await CaddyService.addActiveConfigsToDefault();
+        const result = await AppService.create(app2);
 
         if (!result.success) {
             return ErrorResponse(c, { message: result.message });

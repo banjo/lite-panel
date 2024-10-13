@@ -4,3 +4,7 @@ export type App = {
     domain: string;
     port: number;
 };
+
+const from = (app: App): App => app;
+
+export const App = { from };

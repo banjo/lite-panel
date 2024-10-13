@@ -82,7 +82,6 @@ const updateAppConfig = async (app: App, config: string) => {
 
 const updateDefaultConfig = async (newCommentedConfig: string) => {
     const currentFullFileResult = await readDefaultConfig();
-    logger.info({ currentFullFileResult }, "Current full file result");
 
     if (!currentFullFileResult.success) {
         logger.error(
@@ -96,7 +95,6 @@ const updateDefaultConfig = async (newCommentedConfig: string) => {
         currentFullFileResult.data,
         newCommentedConfig
     );
-    logger.info({ updatedDefaultCaddyfileResult }, "Updated default caddyfile result");
 
     if (!updatedDefaultCaddyfileResult.success) {
         logger.error(
@@ -115,6 +113,7 @@ const updateDefaultConfig = async (newCommentedConfig: string) => {
         return Result.error(error.message);
     }
 
+    logger.info({ data: updatedDefaultCaddyfileResult.data }, "Updated default Caddyfile");
     return Result.ok();
 };
 
