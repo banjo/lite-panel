@@ -1,0 +1,2 @@
+
+     └╴  Error validating: The relation field `DomainEntry` uses the scalar fields domainEntryId. At least one of those fields is optional. Hence the relation field must be optional as well. Prisma  [30, 3]

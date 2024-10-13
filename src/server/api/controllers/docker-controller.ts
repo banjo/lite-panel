@@ -1,4 +1,4 @@
-import { App } from "@/server/common/models/app-model";
+import { App, AppProxy } from "@/server/common/models/app-model";
 import { AppService } from "@/server/common/services/app-service";
 import { DirectoryService } from "@/server/common/services/directory-service";
 import { zValidator } from "@hono/zod-validator";
@@ -20,7 +20,7 @@ export const dockerController = new Hono()
             slug: "test-1",
             directory: DirectoryService.getAppPath("test"),
             domain: "test.com",
-            port: 3000,
+            proxies: [AppProxy.from({ port: 3000 })],
         });
 
         await AppService.create(app);
@@ -30,7 +30,7 @@ export const dockerController = new Hono()
             slug: "test-2",
             directory: DirectoryService.getAppPath("test2"),
             domain: "test2.com",
-            port: 3001,
+            proxies: [AppProxy.from({ port: 3000, subPath: "/test" })],
         };
 
         const result = await AppService.create(app2);

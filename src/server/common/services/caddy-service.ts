@@ -1,13 +1,13 @@
 import { createLogger } from "@/utils/logger";
 import { isProduction } from "@/utils/runtime";
 import { Result, wrapAsync } from "@banjoanton/utils";
-import fs from "fs/promises";
+import fs from "fs-extra";
 import { globby } from "globby";
+import path from "path";
+import { App } from "../models/app-model";
+import { CaddyTextService } from "./caddy-text-service";
 import { DEVELOPMENT_DIRECTORY, DirectoryService } from "./directory-service";
 import { ShellService } from "./shell-service";
-import { CaddyTextService } from "./caddy-text-service";
-import { App } from "../models/app-model";
-import path from "path";
 
 const logger = createLogger("caddy-service");
 const DEFAULT_CADDYFILE = isProduction
@@ -70,7 +70,7 @@ const getActiveConfigs = async () => await globby(CADDY_FILES_GLOB, { onlyFiles:
 
 const updateAppConfig = async (app: App, config: string) => {
     const caddyPath = path.join(app.directory, "Caddyfile");
-    const [_, error] = await wrapAsync(async () => await fs.writeFile(caddyPath, config));
+    const [_, error] = await wrapAsync(async () => await fs.outputFile(caddyPath, config));
 
     if (error) {
         logger.error({ error }, "Failed to update Caddyfile");
@@ -105,7 +105,7 @@ const updateDefaultConfig = async (newCommentedConfig: string) => {
     }
 
     const [_, error] = await wrapAsync(
-        async () => await fs.writeFile(DEFAULT_CADDYFILE, updatedDefaultCaddyfileResult.data)
+        async () => await fs.outputFile(DEFAULT_CADDYFILE, updatedDefaultCaddyfileResult.data)
     );
 
     if (error) {

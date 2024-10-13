@@ -6,4 +6,4 @@ coverage
 build
 .DS_Store
 .dev-files
-dev.db
+dev.db*

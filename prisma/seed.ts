@@ -5,8 +5,13 @@ async function main() {
         data: {
             name: "Application",
             slug: "application",
-            port: 3000,
             domain: "www.google.se",
+            reverseProxies: {
+                create: {
+                    port: 3000,
+                    description: "Main application",
+                },
+            },
         },
     });
     console.log("Done with seed!");

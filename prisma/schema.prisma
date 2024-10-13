@@ -10,10 +10,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// A application in Caddy. Often a docker compose file or a project. Can have multiple domains.
 model Application {
-  id     Int    @id @default(autoincrement())
-  name   String
-  slug   String @unique
-  port   Int
-  domain String
+  id             Int            @id @default(autoincrement())
+  name           String
+  slug           String         @unique
+  domain         String
+  reverseProxies ReverseProxy[]
+}
+
+// A reverse proxy in Caddy. This is a reverse proxy that is served by Caddy. Can have multiple reverse proxies.
+// For specific subpaths or load balanced between multiple services.
+model ReverseProxy {
+  id            Int         @id @default(autoincrement())
+  port          Int
+  subPath       String?
+  description   String?
+  application   Application @relation(fields: [applicationId], references: [id])
+  applicationId Int
 }

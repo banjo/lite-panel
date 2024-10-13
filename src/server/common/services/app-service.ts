@@ -1,20 +1,19 @@
+import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
 import { Result, slugify, wrapAsync } from "@banjoanton/utils";
-import { App } from "../models/app-model";
+import { App, AppProxy } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
-import { Prisma } from "@prisma/client";
-import { prisma } from "@/db";
 
 const logger = createLogger("app-service");
 
 type CreateProps = {
     name: string;
     domain: string;
-    port: number;
+    proxies: AppProxy[];
 };
 
-const create = async ({ name, domain, port }: CreateProps) => {
+const create = async ({ name, proxies, domain }: CreateProps) => {
     let slug = slugify(name);
 
     const [result, error] = await wrapAsync(
@@ -42,7 +41,18 @@ const create = async ({ name, domain, port }: CreateProps) => {
                 name,
                 slug,
                 domain,
-                port,
+                reverseProxies: {
+                    createMany: {
+                        data: proxies.map(proxy => ({
+                            port: proxy.port,
+                            description: proxy.description,
+                            subPath: proxy.subPath,
+                        })),
+                    },
+                },
+            },
+            include: {
+                reverseProxies: true,
             },
         });
     });
@@ -77,4 +87,19 @@ const create = async ({ name, domain, port }: CreateProps) => {
     return Result.ok();
 };
 
-export const AppService = { create };
+const getAll = async () => {
+    const [applications, error] = await wrapAsync(
+        async () => await prisma.application.findMany({ include: { reverseProxies: true } })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to get applications from database");
+        return Result.error(error.message);
+    }
+
+    const apps = applications.map(App.fromDb);
+
+    return Result.ok(apps);
+};
+
+export const AppService = { create, getAll };

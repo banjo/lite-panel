@@ -1,8 +1,11 @@
-import { App } from "../models/app-model";
+import { App, AppProxy } from "../models/app-model";
 
-const createAppConfig = ({ domain, port }: App) =>
+const createReverseProxy = ({ port, subPath }: AppProxy) =>
+    `reverse_proxy ${subPath ?? ""} localhost:${port}`;
+
+const createAppConfig = ({ domain, proxies }: App) =>
     `${domain} {
-    reverse_proxy localhost:${port}
+    ${proxies.map(createReverseProxy).join("\n")}
     encode gzip zstd
 }`;
 
