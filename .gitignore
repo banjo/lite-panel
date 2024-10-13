@@ -5,3 +5,4 @@ coverage
 .git
 build
 .DS_Store
+.dev-files
