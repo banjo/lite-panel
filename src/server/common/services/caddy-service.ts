@@ -113,7 +113,7 @@ const updateDefaultConfig = async (newCommentedConfig: string) => {
         return Result.error(error.message);
     }
 
-    logger.info({ data: updatedDefaultCaddyfileResult.data }, "Updated default Caddyfile");
+    logger.debug({ data: updatedDefaultCaddyfileResult.data }, "Updated default Caddyfile");
     return Result.ok();
 };
 

@@ -42,6 +42,7 @@ const ServerEnvSchema = z.object({
         .union([z.literal("development"), z.literal("testing"), z.literal("production")])
         .default("development"),
     LOG_LEVEL: logLevelSchema,
+    DATABASE_URL: z.string(),
 });
 
 const server = () => {

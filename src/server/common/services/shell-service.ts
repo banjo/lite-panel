@@ -24,21 +24,20 @@ const defaultExecOptions: ExecOptions = {
 const exec = async (command: string, options = defaultExecOptions): ExecReturn => {
     try {
         const { path, sudo } = options;
-        logger.info({ path, command, sudo }, "Executing command");
+        logger.debug({ path, command, sudo }, "Executing command");
         const fullCommand = sudo ? `sudo ${command}` : command;
         const args = fullCommand.split(" ");
         const main = args[0];
         const sub = args.slice(1);
 
         const result = await execa(main, sub, { cwd: path });
-        logger.info({ result });
 
         if (!isEmpty(result.stderr)) {
             logger.error({ stderr: result.stderr }, "Command failed");
             return Result.error(result.stderr);
         }
 
-        logger.info({ stdout: result.stdout }, "Command executed");
+        logger.debug({ stdout: result.stdout }, "Command executed");
         return Result.ok({ message: result.stdout });
     } catch (error) {
         logger.error({ error }, "Command failed");
