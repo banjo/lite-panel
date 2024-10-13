@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
-import { Result, slugify, uuid, wrapAsync } from "@banjoanton/utils";
+import { isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
 import { App, AppProxy } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
@@ -33,6 +33,28 @@ const create = async ({ name, proxies, domain }: CreateProps) => {
     if (result) {
         logger.error({ slug }, "Application slug exists");
         return Result.error("Application slug exists");
+    }
+
+    const ports = proxies.map(proxy => proxy.port);
+    const [proxiesWithSamePort, portError] = await wrapAsync(async () => {
+        return await prisma.reverseProxy.findMany({
+            where: {
+                port: {
+                    in: ports,
+                },
+            },
+        });
+    });
+
+    if (portError) {
+        logger.error({ message: portError.message }, "Failed to look for proxies with same port");
+        return Result.error(portError.message);
+    }
+
+    if (!isEmpty(proxiesWithSamePort)) {
+        const portsInUse = proxiesWithSamePort.map(p => p.port);
+        logger.error({ ports: portsInUse }, "Port is already in use");
+        return Result.error(`Port is already in use: ${portsInUse.join(", ")}`);
     }
 
     const [application, createError] = await wrapAsync(async () => {
