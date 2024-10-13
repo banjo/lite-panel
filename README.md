@@ -13,7 +13,12 @@ pnpm dev
 
 # allow scripts to run
 chmod +x ./scripts/*
+
+# Run the init script for local development
+./scripts/init-dev-files.sh
 ```
+
+This is supposed to be run on a ubuntu server. The `init-dev-files.sh` file will mock the server environment on your local machine. Use the dev flag `NODE_ENV=development` to allow the server to run on your local machine.
 
 To develop UI, use Vite port `5173` locally. Do not use the default port `3009` as it won't have hot module reloading.
 
@@ -46,3 +51,7 @@ To develop UI, use Vite port `5173` locally. Do not use the default port `3009` 
     -   Setup the caddy integration
         -   Add comment to caddyfile, all changes will be made below the header and above the footer of the comment, replacing the existing content.
     -   Start the server
+
+```
+
+```
