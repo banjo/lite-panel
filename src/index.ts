@@ -4,6 +4,8 @@ import { Env } from "./utils/env";
 import { isProduction } from "./utils/runtime";
 import { InitService } from "./server/common/services/init-service";
 import { createLogger } from "./utils/logger";
+import closeWithGrace from "close-with-grace";
+import { prisma } from "./db";
 
 const env = Env.server();
 export const port = env.PORT;
@@ -21,4 +23,9 @@ const main = async () => {
     });
 };
 
-main().catch(console.error);
+closeWithGrace({ delay: 500 }, async ({ err }) => {
+    logger.error({ error: err }, "☹️  Server is closing due to an error");
+    await prisma.$disconnect();
+});
+
+main();
