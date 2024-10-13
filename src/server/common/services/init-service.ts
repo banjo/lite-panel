@@ -19,7 +19,7 @@ const initApplications = async () => {
         return Result.ok();
     }
 
-    logger.debug({ apps: apps.data.map(a => a.slug) }, "Found applications");
+    logger.debug({ apps: apps.data.map(a => a.name) }, "Found applications");
     for (const app of apps.data) {
         const addConfigResult = await CaddyService.addConfigToPath(app);
 
@@ -29,8 +29,8 @@ const initApplications = async () => {
         }
     }
 
-    const slugs = apps.data.map(app => app.slug);
-    logger.info({ slugs }, "Added all application from database");
+    const names = apps.data.map(app => app.name);
+    logger.info({ names }, "Added all application from database");
 
     const activeConfigPaths = await CaddyService.getActiveConfigs();
     const overflowConfigs = activeConfigPaths.filter(

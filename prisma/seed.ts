@@ -1,10 +1,11 @@
 import { prisma } from "@/db";
+import { uuid } from "@banjoanton/utils";
 
 async function main() {
     await prisma.application.create({
         data: {
             name: "Application",
-            slug: "application",
+            slug: uuid(),
             domain: "www.google.se",
             reverseProxies: {
                 create: {

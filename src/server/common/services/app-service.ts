@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
-import { Result, slugify, wrapAsync } from "@banjoanton/utils";
+import { Result, slugify, uuid, wrapAsync } from "@banjoanton/utils";
 import { App, AppProxy } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
@@ -14,7 +14,7 @@ type CreateProps = {
 };
 
 const create = async ({ name, proxies, domain }: CreateProps) => {
-    let slug = slugify(name);
+    const slug = uuid();
 
     const [result, error] = await wrapAsync(
         async () =>
@@ -32,7 +32,7 @@ const create = async ({ name, proxies, domain }: CreateProps) => {
 
     if (result) {
         logger.error({ slug }, "Application slug exists");
-        slug = `${slug}-${Date.now()}`;
+        return Result.error("Application slug exists");
     }
 
     const [application, createError] = await wrapAsync(async () => {
