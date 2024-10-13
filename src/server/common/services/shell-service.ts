@@ -7,6 +7,7 @@ const logger = createLogger("shell-service");
 
 type ExecOptions = {
     path?: string;
+    sudo?: boolean;
 };
 
 type ExecResult = {
@@ -17,17 +18,20 @@ type ExecReturn = AsyncResultType<ExecResult>;
 
 const defaultExecOptions: ExecOptions = {
     path: undefined,
+    sudo: true,
 };
 
 const exec = async (command: string, options = defaultExecOptions): ExecReturn => {
     try {
-        const { path } = options;
-        logger.info({ path, command }, "Executing command");
-        const args = command.split(" ");
+        const { path, sudo } = options;
+        logger.info({ path, command, sudo }, "Executing command");
+        const fullCommand = sudo ? `sudo ${command}` : command;
+        const args = fullCommand.split(" ");
         const main = args[0];
         const sub = args.slice(1);
 
         const result = await execa(main, sub, { cwd: path });
+        logger.info({ result });
 
         if (!isEmpty(result.stderr)) {
             logger.error({ stderr: result.stderr }, "Command failed");
