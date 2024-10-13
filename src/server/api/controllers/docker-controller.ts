@@ -18,7 +18,7 @@ export const dockerController = new Hono()
         const app = App.from({
             name: "test",
             slug: "test-1",
-            directory: DirectoryService.getAppPath("test"),
+            directory: DirectoryService.getAppPath("test-1"),
             domain: "test.com",
             proxies: [AppProxy.from({ port: 3000 })],
         });
@@ -28,7 +28,7 @@ export const dockerController = new Hono()
         const app2: App = {
             name: "test2",
             slug: "test-2",
-            directory: DirectoryService.getAppPath("test2"),
+            directory: DirectoryService.getAppPath("test-2"),
             domain: "test2.com",
             proxies: [AppProxy.from({ port: 3000, subPath: "/test" })],
         };

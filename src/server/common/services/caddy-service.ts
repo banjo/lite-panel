@@ -6,13 +6,13 @@ import { globby } from "globby";
 import path from "path";
 import { App } from "../models/app-model";
 import { CaddyTextService } from "./caddy-text-service";
-import { DEVELOPMENT_DIRECTORY, DirectoryService } from "./directory-service";
+import { DirectoryService, getDevelopmentDirectory } from "./directory-service";
 import { ShellService } from "./shell-service";
 
 const logger = createLogger("caddy-service");
 const DEFAULT_CADDYFILE = isProduction
     ? "/etc/caddy/Caddyfile"
-    : `${DEVELOPMENT_DIRECTORY}/Caddyfile`;
+    : `${getDevelopmentDirectory()}/Caddyfile`;
 const CADDY_FILES_GLOB = `${DirectoryService.appsPath()}/*/Caddyfile`;
 
 // All content in the main caddy file should be between these two comments, and will be replaced on updates
