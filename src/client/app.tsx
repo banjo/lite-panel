@@ -21,7 +21,6 @@ const App = () => {
     return (
         <QueryProvider>
             <RouterProvider router={router} />
-            <Counter />
         </QueryProvider>
     );
 };
