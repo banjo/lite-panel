@@ -23,7 +23,7 @@ export const getDevelopmentDirectory = () => {
     return path.join(packageJsonDir, ".dev-files");
 };
 
-const PRODUCTION_DIRECTORY = "/srv/.lite-panel";
+const PRODUCTION_DIRECTORY = "/data/lite-panel";
 
 const DEFAULT_DIRECTORY = isProduction ? PRODUCTION_DIRECTORY : getDevelopmentDirectory();
 const APPS_DIRECTORY = path.join(DEFAULT_DIRECTORY, "apps");
