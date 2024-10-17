@@ -29,7 +29,6 @@ apt-get install -y curl wget git fail2ban sqlite3 >/dev/null
 
 # INSTALL DOCKER, CADDY, NODE, AND UFW-DOCKER
 if ! [ -x "$(command -v docker)" ]; then
-  echo -e "${YELLOW}Docker...${NC}"
   # Add Docker's official GPG key:
   apt-get update >/dev/null 2>&1
   apt-get install ca-certificates curl -y >/dev/null 2>&1
@@ -54,7 +53,6 @@ if ! [ -x "$(command -v docker)" ]; then
 fi
 
 if ! [ -x "$(command -v caddy)" ]; then
-  echo -e "${YELLOW}Caddy...${NC}"
   apt-get install -y debian-keyring debian-archive-keyring apt-transport-https curl >/dev/null 2>&1
   curl -1slf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg >/dev/null 2>&1
   curl -1slf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list >/dev/null 2>&1
@@ -66,16 +64,13 @@ if ! [ -x "$(command -v caddy)" ]; then
 fi
 
 if ! [ -x "$(command -v node)" ]; then
-  echo -e "${YELLOW}Node...${NC}"
   curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION.x | sudo -E bash - >/dev/null 2>&1
   apt-get install -y nodejs >/dev/null 2>&1
 fi
 
 if ! command -v ufw-docker &>/dev/null; then
-  echo -e "${YELLOW}Installing ufw-docker...${NC}"
   wget -O /usr/local/bin/ufw-docker https://github.com/chaifeng/ufw-docker/raw/master/ufw-docker >/dev/null 2>&1
   chmod +x /usr/local/bin/ufw-docker >/dev/null 2>&1
-  echo -e "${GREEN}ufw-docker installed successfully.${NC}"
 fi
 
 echo -e "${YELLOW}Configuring network settings...${NC}"
@@ -87,6 +82,15 @@ ufw allow 443/tcp >/dev/null 2>&1
 ufw --force enable >/dev/null 2>&1
 ufw-docker install >/dev/null 2>&1
 systemctl restart ufw >/dev/null 2>&1
+
+echo "[sshd]
+enabled = true
+port    = ssh
+filter  = sshd
+logpath = /var/log/auth.log
+maxretry = 5
+bantime = 3600" >/etc/fail2ban/jail.d/myjails.conf
+systemctl restart fail2ban >/dev/null 2>&1
 
 # CLONE THE REPOSITORY
 echo -e "${YELLOW}Preparing server...${NC}"
@@ -154,10 +158,10 @@ SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
 # Create caddyfile for the server
 # Ask the user for which domain to use for the server ui
 echo -e "${YELLOW}Configuring Caddy...${NC}"
-echo -e "${YELLOW}Please enter the domain for the server UI (e.g. example.com):${NC}"
+echo -e "${YELLOW}Please enter the domain LitePanel(e.g. example.com):${NC}"
 read DOMAIN
 
-echo -e "${YELLOW}Be sure to point an A record to the domain: $DOMAIN${NC}"
+echo -e "${YELLOW}Be sure to point an A record to the domain ($DOMAIN${NC}) before continuing."
 read -p "Press enter to continue"
 
 # create caddy file if it does not exist
