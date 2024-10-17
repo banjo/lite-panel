@@ -110,6 +110,7 @@ cd $GIT_DIR
 npm install -g pnpm >/dev/null 2>&1
 pnpm install >/dev/null 2>&1
 chmod +x ./scripts/*
+pnpm run db:generate >/dev/null 2>&1
 pnpm build >/dev/null 2>&1
 DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 
