@@ -8,13 +8,19 @@ PORT=3021
 
 set -e # Exit immediately if a command exits with a non-zero status
 
+# Color Codes
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
 if [ $EUID != 0 ]; then
   echo -e "${RED}Please run as root or use sudo.${NC}"
   exit
 fi
 
 echo -e "${YELLOW}Preparing directories...${NC}"
-mkdir -p $DIRECTORY/{apps,logs,db}
+mkdir -p $DIRECTORY/{apps,logs,db,caddy}
 chmod +x $DIRECTORY/*
 
 echo -e "${YELLOW}Installing packages...${NC}"
@@ -139,5 +145,46 @@ EOF
   sudo systemctl enable $SERVICE_NAME.service
   sudo systemctl start $SERVICE_NAME.service
 fi
+
+# ADD CADDY CONFIG FOR THE SERVER
+
+CADDY_FILE=/etc/caddy/Caddyfile
+SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
+
+# Create caddyfile for the server
+# Ask the user for which domain to use for the server ui
+echo -e "${YELLOW}Configuring Caddy...${NC}"
+echo -e "${YELLOW}Please enter the domain for the server UI (e.g. example.com):${NC}"
+read DOMAIN
+
+echo -e "${YELLOW}Be sure to point an A record to the domain: $DOMAIN${NC}"
+read -p "Press enter to continue"
+
+# create caddy file if it does not exist
+if [ ! -f "$CADDY_FILE" ]; then
+  touch $CADDY_FILE
+fi
+truncate -s 0 $CADDY_FILE
+
+# Add the domain if the port and domain do not exist in the caddy file
+if ! grep -q "$DOMAIN" $SERVER_CADDY_FILE && ! grep -q "localhost:$PORT" $SERVER_CADDY_FILE; then
+  echo "$DOMAIN {" >>$SERVER_CADDY_FILE
+  echo "  reverse_proxy localhost:$PORT" >>$SERVER_CADDY_FILE
+  echo "  encode gzip" >>$SERVER_CADDY_FILE
+  echo "}" >>$SERVER_CADDY_FILE
+fi
+
+# import statement for the server caddyfile
+if ! grep -q "import $SERVER_CADDY_FILE" $CADDY_FILE; then
+  echo "import $SERVER_CADDY_FILE" >>$CADDY_FILE
+fi
+
+# Add the server caddyfile comment that is used for replacement
+if ! grep -q "# lite-panel start" $CADDY_FILE; then
+  echo "# lite-panel start" >>$CADDY_FILE
+  echo "# lite-panel end" >>$CADDY_FILE
+fi
+
+systemctl restart caddy >/dev/null 2>&1
 
 echo -e "${GREEN}Initalization complete.${NC}"
