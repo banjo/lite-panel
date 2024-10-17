@@ -183,9 +183,14 @@ truncate -s 0 $SERVER_CADDY_FILE
 # Add the domain if the port and domain do not exist in the caddy file
 if ! grep -q "$DOMAIN" $SERVER_CADDY_FILE && ! grep -q "localhost:$PORT" $SERVER_CADDY_FILE; then
   echo "$DOMAIN {" >>$SERVER_CADDY_FILE
+  echo "  handle_path /assets/* {" >>$SERVER_CADDY_FILE
+  echo "    root * $GIT_DIR/build/assets" >>$SERVER_CADDY_FILE
+  echo "    file_server" >>$SERVER_CADDY_FILE
+  echo "  }" >>$SERVER_CADDY_FILE
   echo "  reverse_proxy localhost:$PORT" >>$SERVER_CADDY_FILE
   echo "  encode gzip" >>$SERVER_CADDY_FILE
   echo "}" >>$SERVER_CADDY_FILE
+
 fi
 
 # import statement for the server caddyfile
