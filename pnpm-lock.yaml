@@ -12,8 +12,8 @@ importers:
         specifier: ^0.1.11
         version: 0.1.11(prettier@3.3.3)
       '@banjoanton/utils':
-        specifier: ^0.1.92
-        version: 0.1.92
+        specifier: ^0.1.94
+        version: 0.1.94
       '@hono/node-server':
         specifier: ^1.13.1
         version: 1.13.1(hono@4.6.3)
@@ -43,7 +43,7 @@ importers:
         version: 5.59.12(react@18.3.1)
       '@tanstack/react-router':
         specifier: ^1.64.3
-        version: 1.64.3(@tanstack/router-generator@1.64.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.64.3(@tanstack/router-generator@1.69.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -107,7 +107,7 @@ importers:
         version: 1.19.0
       '@tanstack/router-devtools':
         specifier: ^1.64.3
-        version: 1.64.3(@tanstack/react-router@1.64.3(@tanstack/router-generator@1.64.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 1.64.3(@tanstack/react-router@1.64.3(@tanstack/router-generator@1.69.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/router-plugin':
         specifier: ^1.64.0
         version: 1.64.0(vite@5.4.8(@types/node@22.7.5))
@@ -149,7 +149,7 @@ importers:
         version: 3.4.13
       tsup:
         specifier: ^8.3.0
-        version: 8.3.0(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(typescript@5.6.3)(yaml@2.5.1)
+        version: 8.3.0(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(typescript@5.6.3)(yaml@2.6.0)
       tsx:
         specifier: ^4.19.1
         version: 4.19.1
@@ -297,8 +297,8 @@ packages:
     peerDependencies:
       prettier: ^3.0.0
 
-  '@banjoanton/utils@0.1.92':
-    resolution: {integrity: sha512-5ABkX9Ao3N42k0YoBcgyAXF/js+sQR3Lh5CyYaxtzsBYUuU4y6Pu7/LvXIqbck1tc6yqgJvgbpK5lR4XuZljiQ==}
+  '@banjoanton/utils@0.1.94':
+    resolution: {integrity: sha512-tlvKml02rsa7Ai54MrFif831PAImf6ocscTuJAbIrHda8dnxNZYN7mQq2lLie2AzkHpd1CuTepXxE4/mJjfS5g==}
 
   '@dotenvx/dotenvx@1.19.0':
     resolution: {integrity: sha512-o+gdlAm+5xHw8DvkOZeMUn0vqiHWVz5oO9FpRg+ST9Jpg5eg3XL+WSOc7FqJ0PYAuoTHxhHP5vDPPcXvcJKnIQ==}
@@ -1343,6 +1343,10 @@ packages:
 
   '@tanstack/router-generator@1.64.0':
     resolution: {integrity: sha512-DTSMjOUG3ipMQjvOZKJLOMV5BqahUGZAYbgTol0ccdOSa64ApKBEr8vOsG3wLbNZ+Okw97hosGmMHsOr+wsFiQ==}
+    engines: {node: '>=12'}
+
+  '@tanstack/router-generator@1.69.1':
+    resolution: {integrity: sha512-llWfYf2oEgSC8QoO0uSov1SGC9/5r4oED7k07AAnfDMQ/jdXU4g0OdJlu2se7m5a17GgN2lEkaz/ZjmgM/tQrA==}
     engines: {node: '>=12'}
 
   '@tanstack/router-plugin@1.64.0':
@@ -3455,6 +3459,11 @@ packages:
     engines: {node: '>= 14'}
     hasBin: true
 
+  yaml@2.6.0:
+    resolution: {integrity: sha512-a6ae//JvKDEra2kdi1qzCyrJW/WZCgFi8ydDV+eXExl95t+5R+ijnqHJbz9tmMh8FUjx3iv2fCQ4dclAQlO2UQ==}
+    engines: {node: '>= 14'}
+    hasBin: true
+
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
@@ -3654,7 +3663,7 @@ snapshots:
     dependencies:
       prettier: 3.3.3
 
-  '@banjoanton/utils@0.1.92':
+  '@banjoanton/utils@0.1.94':
     dependencies:
       ohash: 1.1.4
       uncrypto: 0.1.3
@@ -4471,7 +4480,7 @@ snapshots:
       '@tanstack/query-core': 5.59.12
       react: 18.3.1
 
-  '@tanstack/react-router@1.64.3(@tanstack/router-generator@1.64.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/react-router@1.64.3(@tanstack/router-generator@1.69.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
       '@tanstack/history': 1.61.1
       '@tanstack/react-store': 0.5.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -4480,7 +4489,7 @@ snapshots:
       tiny-invariant: 1.3.3
       tiny-warning: 1.0.3
     optionalDependencies:
-      '@tanstack/router-generator': 1.64.0
+      '@tanstack/router-generator': 1.69.1
 
   '@tanstack/react-store@0.5.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
@@ -4489,9 +4498,9 @@ snapshots:
       react-dom: 18.3.1(react@18.3.1)
       use-sync-external-store: 1.2.2(react@18.3.1)
 
-  '@tanstack/router-devtools@1.64.3(@tanstack/react-router@1.64.3(@tanstack/router-generator@1.64.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+  '@tanstack/router-devtools@1.64.3(@tanstack/react-router@1.64.3(@tanstack/router-generator@1.69.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(csstype@3.1.3)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
     dependencies:
-      '@tanstack/react-router': 1.64.3(@tanstack/router-generator@1.64.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@tanstack/react-router': 1.64.3(@tanstack/router-generator@1.69.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       clsx: 2.1.1
       goober: 2.1.16(csstype@3.1.3)
       react: 18.3.1
@@ -4505,6 +4514,14 @@ snapshots:
       prettier: 3.3.3
       tsx: 4.19.1
       zod: 3.23.8
+
+  '@tanstack/router-generator@1.69.1':
+    dependencies:
+      '@tanstack/virtual-file-routes': 1.64.0
+      prettier: 3.3.3
+      tsx: 4.19.1
+      zod: 3.23.8
+    optional: true
 
   '@tanstack/router-plugin@1.64.0(vite@5.4.8(@types/node@22.7.5))':
     dependencies:
@@ -6111,14 +6128,14 @@ snapshots:
     optionalDependencies:
       postcss: 8.4.47
 
-  postcss-load-config@6.0.1(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(yaml@2.5.1):
+  postcss-load-config@6.0.1(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(yaml@2.6.0):
     dependencies:
       lilconfig: 3.1.2
     optionalDependencies:
       jiti: 2.3.3
       postcss: 8.4.47
       tsx: 4.19.1
-      yaml: 2.5.1
+      yaml: 2.6.0
 
   postcss-nested@6.2.0(postcss@8.4.47):
     dependencies:
@@ -6606,7 +6623,7 @@ snapshots:
 
   tslib@2.7.0: {}
 
-  tsup@8.3.0(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(typescript@5.6.3)(yaml@2.5.1):
+  tsup@8.3.0(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(typescript@5.6.3)(yaml@2.6.0):
     dependencies:
       bundle-require: 5.0.0(esbuild@0.23.1)
       cac: 6.7.14
@@ -6617,7 +6634,7 @@ snapshots:
       execa: 5.1.1
       joycon: 3.1.1
       picocolors: 1.1.0
-      postcss-load-config: 6.0.1(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(yaml@2.5.1)
+      postcss-load-config: 6.0.1(jiti@2.3.3)(postcss@8.4.47)(tsx@4.19.1)(yaml@2.6.0)
       resolve-from: 5.0.0
       rollup: 4.24.0
       source-map: 0.8.0-beta.0
@@ -6851,6 +6868,9 @@ snapshots:
   yallist@3.1.1: {}
 
   yaml@2.5.1: {}
+
+  yaml@2.6.0:
+    optional: true
 
   yocto-queue@0.1.0: {}
 

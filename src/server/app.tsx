@@ -15,7 +15,7 @@ export const app = new Hono()
 app.use(logger());
 
 app.use(
-    "/*",
+    "/assets/*",
     serveStatic({
         rewriteRequestPath: path => `./dist${path}`,
     })
@@ -30,7 +30,8 @@ if (isProduction) {
                         <meta charSet="utf-8" />
                         <meta content="width=device-width, initial-scale=1" name="viewport" />
                         <title>Lite panel</title>
-                        <script type="module" src="/client.js" />
+                        <script type="module" src="/assets/client.js" />
+                        <link rel="stylesheet" href="/assets/style.css" />
                     </head>
                     <body>
                         <div id="root" />
@@ -40,11 +41,5 @@ if (isProduction) {
         );
     });
 }
-
-// if (!isProduction) {
-//     app.use("/*", async c => {
-//         return c.redirect("/");
-//     });
-// }
 
 export type AppType = typeof app;
