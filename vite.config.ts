@@ -7,7 +7,7 @@ export default defineConfig({
     build: {
         rollupOptions: {
             output: {
-                entryFileNames: "client.js",
+                entryFileNames: "assets/client.js",
             },
         },
     },
