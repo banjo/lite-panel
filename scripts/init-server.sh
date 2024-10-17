@@ -12,6 +12,7 @@ set -e # Exit immediately if a command exits with a non-zero status
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 if [ $EUID != 0 ]; then
@@ -19,6 +20,7 @@ if [ $EUID != 0 ]; then
   exit
 fi
 
+echo -e "${GREEN}Welcome to LitePanel! This script will help you setup the server.${NC}"
 echo -e "${YELLOW}Preparing directories...${NC}"
 mkdir -p $DIRECTORY/{apps,logs,db,caddy}
 chmod +x $DIRECTORY/*
@@ -158,10 +160,10 @@ SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
 # Create caddyfile for the server
 # Ask the user for which domain to use for the server ui
 echo -e "${YELLOW}Configuring Caddy...${NC}"
-echo -e "${YELLOW}Please enter the domain LitePanel(e.g. example.com):${NC}"
+echo -e "${BLUE}Please enter your domain to LitePanel UI (e.g. example.com):${NC}"
 read DOMAIN
 
-echo -e "${YELLOW}Be sure to point an A record to the domain ($DOMAIN${NC}) before continuing."
+echo -e "${BLUE}Be sure to point an A record to the domain ($DOMAIN) before continuing.${NC}"
 read -p "Press enter to continue"
 
 # create caddy file if it does not exist
@@ -169,6 +171,12 @@ if [ ! -f "$CADDY_FILE" ]; then
   touch $CADDY_FILE
 fi
 truncate -s 0 $CADDY_FILE
+
+# create server caddy file if it does not exist
+if [ ! -f "$SERVER_CADDY_FILE" ]; then
+  touch $SERVER_CADDY_FILE
+fi
+truncate -s 0 $SERVER_CADDY_FILE
 
 # Add the domain if the port and domain do not exist in the caddy file
 if ! grep -q "$DOMAIN" $SERVER_CADDY_FILE && ! grep -q "localhost:$PORT" $SERVER_CADDY_FILE; then

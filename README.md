@@ -25,6 +25,15 @@ This is supposed to be run on a ubuntu server. The `init-dev-files.sh` file will
 
 To develop UI, use Vite port `5173` locally. Do not use the default port `3009` as it won't have hot module reloading.
 
+## Getting started
+
+-   Create a new VPS
+-   Run the following command on the server:
+
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/banjo/lite-panel/refs/heads/main/scripts/init-server.sh)
+```
+
 ## Things:
 
 -   Init script to install correct dependencies, clone the repo and start the server and environment.
