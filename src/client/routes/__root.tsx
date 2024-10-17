@@ -1,6 +1,9 @@
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { SideMenuContainer } from "../components/containers/side-menu-container";
+import { Env } from "@/utils/env";
+
+const env = Env.client();
 
 export const Route = createRootRoute({
     component: () => (
@@ -9,10 +12,10 @@ export const Route = createRootRoute({
                 <SideMenuContainer />
                 <Outlet />
             </div>
-            <TanStackRouterDevtools />
+            {env.DEV ? <TanStackRouterDevtools /> : null}
         </>
     ),
-    onError: error => {
+    onError: (error: unknown) => {
         console.log("Error", error);
         throw redirect({ to: "/" });
     },

@@ -61,6 +61,8 @@ const server = () => {
 const ClientEnvSchema = z.object({
     VITE_SERVER_URL: z.string(),
     VITE_LOG_LEVEL: logLevelSchema,
+    PROD: z.boolean(),
+    DEV: z.boolean(),
 });
 
 const client = () => {
