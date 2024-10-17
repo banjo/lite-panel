@@ -110,13 +110,7 @@ cd $GIT_DIR
 npm install -g pnpm >/dev/null 2>&1
 pnpm install >/dev/null 2>&1
 chmod +x ./scripts/*
-
-# check if the "build" folder exists and it contains a "index.js" file, if not, run the below command
-
-if [ ! -f "$GIT_DIR/build/index.js" ]; then
-  pnpm build >/dev/null 2>&1
-fi
-
+pnpm build >/dev/null 2>&1
 DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 
 # SETUP THE SERVICE
@@ -126,10 +120,9 @@ SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 if [ -f "$SERVICE_FILE" ]; then
   systemctl stop $SERVICE_NAME.service >/dev/null 2>&1
   systemctl disable $SERVICE_NAME.service >/dev/null 2>&1
-  rm $SERVICE_FILE
+  rm $SERVICE_FILE >/dev/null 2>&1
 fi
 
-# Create or overwrite systemd service file
 sudo bash -c "cat > $SERVICE_FILE" <<EOF
 [Unit]
 Description=LitePanel Server
@@ -155,14 +148,13 @@ WantedBy=multi-user.target
 EOF
 
 # Reload systemctl to acknowledge new service
-sudo systemctl daemon-reload
+sudo systemctl daemon-reload >/dev/null 2>&1
 
 # Enable and start the service
-sudo systemctl enable $SERVICE_NAME.service
-sudo systemctl start $SERVICE_NAME.service
+sudo systemctl enable $SERVICE_NAME.service >/dev/null 2>&1
+sudo systemctl start $SERVICE_NAME.service >/dev/null 2>&1
 
 # ADD CADDY CONFIG FOR THE SERVER
-
 CADDY_FILE=/etc/caddy/Caddyfile
 SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
 
