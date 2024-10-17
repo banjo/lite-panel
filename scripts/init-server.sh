@@ -123,9 +123,14 @@ DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 SERVICE_NAME=litepanel
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 
-if [ ! -f "$SERVICE_FILE" ]; then
-  # Create systemd service file
-  sudo bash -c "cat > $SERVICE_FILE" <<EOF
+if [ -f "$SERVICE_FILE" ]; then
+  systemctl stop $SERVICE_NAME.service >/dev/null 2>&1
+  systemctl disable $SERVICE_NAME.service >/dev/null 2>&1
+  rm $SERVICE_FILE
+fi
+
+# Create or overwrite systemd service file
+sudo bash -c "cat > $SERVICE_FILE" <<EOF
 [Unit]
 Description=LitePanel Server
 After=network.target
@@ -149,13 +154,12 @@ SyslogIdentifier=$SERVICE_NAME
 WantedBy=multi-user.target
 EOF
 
-  # Reload systemctl to acknowledge new service
-  sudo systemctl daemon-reload
+# Reload systemctl to acknowledge new service
+sudo systemctl daemon-reload
 
-  # Enable and start the service
-  sudo systemctl enable $SERVICE_NAME.service
-  sudo systemctl start $SERVICE_NAME.service
-fi
+# Enable and start the service
+sudo systemctl enable $SERVICE_NAME.service
+sudo systemctl start $SERVICE_NAME.service
 
 # ADD CADDY CONFIG FOR THE SERVER
 
