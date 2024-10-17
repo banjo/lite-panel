@@ -110,7 +110,12 @@ cd $GIT_DIR
 npm install -g pnpm >/dev/null 2>&1
 pnpm install >/dev/null 2>&1
 chmod +x ./scripts/*
-pnpm build >/dev/null 2>&1
+
+# check if the "build" folder exists and it contains a "index.js" file, if not, run the below command
+
+if [ ! -f "$GIT_DIR/build/index.js" ]; then
+  pnpm build >/dev/null 2>&1
+fi
 
 DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 
