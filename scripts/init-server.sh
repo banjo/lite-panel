@@ -137,8 +137,8 @@ Environment="VITE_SERVER_URL=http://localhost:$PORT"
 Environment="PORT=$PORT"
 Environment="DATABASE_URL=file:$DATABASE_FILE"
 RestartSec=10
-StandardOutput=append:$DIRECTORY/logs/litepanel.log
-StandardError=append:$DIRECTORY/logs/litepanel_error.log
+StandardOutput=syslog
+StandardError=syslog
 SyslogIdentifier=$SERVICE_NAME
 
 [Install]
@@ -187,10 +187,6 @@ $DOMAIN {
   }
   reverse_proxy localhost:$PORT
   encode gzip
-  log {
-    output file $DIRECTORY/logs/caddy.log
-    format single_field common_log
-  }
 }
 EOF
 fi
