@@ -31,7 +31,12 @@ To develop UI, use Vite port `5173` locally. Do not use the default port `3009` 
 -   Run the following command on the server:
 
 ```bash
+# If you run as "root" user
 bash <(curl -fsSL https://raw.githubusercontent.com/banjo/lite-panel/refs/heads/main/scripts/init-server.sh)
+
+# If you run as a different user
+curl -fsSL -o init-server.sh https://raw.githubusercontent.com/banjo/lite-panel/refs/heads/main/scripts/init-server.sh
+sudo bash init-server.sh
 ```
 
 ## Things:
