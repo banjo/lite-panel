@@ -30,7 +30,7 @@ mkdir -p $DIRECTORY/{apps,logs,db,caddy}
 
 echo -e "${YELLOW}Installing packages...${NC}"
 apt-get update -y >/dev/null
-apt-get install -y curl wget git fail2ban sqlite3 >/dev/null
+apt-get install -y curl wget git fail2ban sqlite3 apache2-utils >/dev/null
 
 # INSTALL DOCKER, CADDY, NODE, AND UFW-DOCKER
 if ! [ -x "$(command -v docker)" ]; then
@@ -209,6 +209,20 @@ fi
 if [ ! -f "$SUDOERS_FILE" ]; then
   echo "$USER ALL=(ALL) NOPASSWD: /bin/systemctl reload caddy" | sudo tee "$SUDOERS_FILE" >/dev/null
   sudo chmod 440 "$SUDOERS_FILE"
+fi
+
+# Check if the user wants to use basic auth, and if so, ask for the username and password
+echo -e "${BLUE}Do you want to use basic auth for the server? (y/N)${NC}"
+read BASIC_AUTH
+
+if [ "$BASIC_AUTH" == "y" ]; then
+  echo -e "${BLUE}Please enter the username:${NC}"
+  read USERNAME
+  echo -e "${BLUE}Please enter the password:${NC}"
+  read PASSWORD
+
+  htpasswd -b -c /etc/caddy/.htpasswd $USERNAME $PASSWORD
+  echo -e "${GREEN}Basic auth has been enabled.${NC}"
 fi
 
 systemctl restart caddy >/dev/null 2>&1
