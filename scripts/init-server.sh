@@ -9,8 +9,6 @@ SERVICE_NAME=litepanel
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 GIT_DIR=$DIRECTORY/repo
 SUDOERS_FILE="/etc/sudoers.d/$USER"
-SERVER_IP=$(curl -s http://ipv4.icanhazip.com)
-USE_SERVER_IP=false
 
 set -e # Exit immediately if a command exits with a non-zero status
 
@@ -162,18 +160,11 @@ SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
 # Create caddyfile for the server
 # Ask the user for which domain to use for the server ui
 echo -e "${YELLOW}Configuring Caddy...${NC}"
-echo -e "${BLUE}\nPlease enter your domain to LitePanel UI (e.g. example.com)"
-echo -e "${BLUE}Press enter to just use the server IP address ($SERVER_IP).${NC}"
+echo -e "${BLUE}Please enter your domain to LitePanel UI (e.g. example.com):${NC}"
 read DOMAIN
 
-# If the domain is empty, use the server IP
-if [ -z "$DOMAIN" ]; then
-  DOMAIN=$SERVER_IP
-  USE_SERVER_IP=true
-else
-  echo -e "${BLUE}Be sure to point an A record to the domain ($DOMAIN) before continuing.${NC}"
-  read -p "Press enter to continue"
-fi
+echo -e "${BLUE}Be sure to point an A record to the domain ($DOMAIN) before continuing.${NC}"
+read -p "Press enter to continue"
 
 # create caddy file if it does not exist
 if [ ! -f "$CADDY_FILE" ]; then
@@ -223,8 +214,4 @@ fi
 systemctl restart caddy >/dev/null 2>&1
 
 echo -e "${GREEN}Initalization complete.${NC}"
-if [ "$USE_SERVER_IP" = true ]; then
-  echo -e "${BLUE}You can now access the server at http://$SERVER_IP"
-else
-  echo -e "${BLUE}You can now access the server at https://$DOMAIN"
-fi
+echo -e "${GREEN}You can now access the server at https://$DOMAIN${NC}"
