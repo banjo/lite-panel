@@ -1,14 +1,8 @@
 import { isBrowser } from "@banjoanton/utils";
 import { z } from "zod";
+import { fromError } from "zod-validation-error";
 
-const fromZodError = (error: z.ZodError): string => {
-    const message = ["Invalid environment variables:"];
-
-    const affected = error.issues.map(issue => issue.path.join(".")).join(", ");
-    message.push(affected);
-
-    return message.join(" ");
-};
+const fromZodError = (error: z.ZodError): string => fromError(error).toString();
 
 const allClient = () => {
     if (!isBrowser()) {

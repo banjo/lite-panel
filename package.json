@@ -54,7 +54,8 @@
         "react-dom": "^18.3.1",
         "tailwind-merge": "^2.5.3",
         "tailwindcss-animate": "^1.0.7",
-        "zod": "^3.23.8"
+        "zod": "^3.23.8",
+        "zod-validation-error": "^3.4.0"
     },
     "devDependencies": {
         "@banjoanton/eslint-config": "^0.2.10",
