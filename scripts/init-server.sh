@@ -7,6 +7,7 @@ DIRECTORY=/data/lite-panel
 PORT=3021
 SERVICE_NAME=litepanel
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
+GIT_DIR=$DIRECTORY/repo
 
 set -e # Exit immediately if a command exits with a non-zero status
 
@@ -98,7 +99,6 @@ systemctl restart fail2ban >/dev/null 2>&1
 
 # CLONE THE REPOSITORY
 echo -e "${YELLOW}Preparing server...${NC}"
-GIT_DIR=$DIRECTORY/repo
 
 if [ ! -f "$GIT_DIR/package.json" ]; then
   git clone $GITHUB_URL $GIT_DIR >/dev/null 2>&1
