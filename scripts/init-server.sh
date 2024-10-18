@@ -8,6 +8,7 @@ PORT=3021
 SERVICE_NAME=litepanel
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 GIT_DIR=$DIRECTORY/repo
+SUDOERS_FILE="/etc/sudoers.d/$USER"
 SERVER_IP=$(curl -s http://ipv4.icanhazip.com)
 USE_SERVER_IP=false
 
@@ -211,6 +212,12 @@ if ! grep -q "# lite-panel start" "$CADDY_FILE"; then
 # lite-panel start
 # lite-panel end
 EOF
+fi
+
+# Allow the user to reload caddy without a password
+if [ ! -f "$SUDOERS_FILE" ]; then
+  echo "$USER ALL=(ALL) NOPASSWD: /bin/systemctl reload caddy" | sudo tee "$SUDOERS_FILE" >/dev/null
+  sudo chmod 440 "$SUDOERS_FILE"
 fi
 
 systemctl restart caddy >/dev/null 2>&1
