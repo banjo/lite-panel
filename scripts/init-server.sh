@@ -5,6 +5,8 @@ NODE_VERSION=20
 GITHUB_URL=https://github.com/banjo/lite-panel.git
 DIRECTORY=/data/lite-panel
 PORT=3021
+SERVICE_NAME=litepanel
+SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 
 set -e # Exit immediately if a command exits with a non-zero status
 
@@ -23,7 +25,7 @@ fi
 echo -e "${GREEN}Welcome to LitePanel! This script will help you setup the server.${NC}"
 echo -e "${YELLOW}Preparing directories...${NC}"
 mkdir -p $DIRECTORY/{apps,logs,db,caddy}
-chmod +x $DIRECTORY/*
+chmod +x $DIRECTORY/**/*.sh
 
 echo -e "${YELLOW}Installing packages...${NC}"
 apt-get update -y >/dev/null
@@ -114,10 +116,6 @@ pnpm run db:generate >/dev/null 2>&1
 pnpm build >/dev/null 2>&1
 DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 
-# SETUP THE SERVICE
-SERVICE_NAME=litepanel
-SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
-
 if [ -f "$SERVICE_FILE" ]; then
   systemctl stop $SERVICE_NAME.service >/dev/null 2>&1
   systemctl disable $SERVICE_NAME.service >/dev/null 2>&1
@@ -140,8 +138,8 @@ Environment="VITE_SERVER_URL=http://localhost:$PORT"
 Environment="PORT=$PORT"
 Environment="DATABASE_URL=file:$DATABASE_FILE"
 RestartSec=10
-StandardOutput=syslog
-StandardError=syslog
+StandardOutput=append:$DIRECTORY/logs/litepanel.log
+StandardError=append:$DIRECTORY/logs/litepanel_error.log
 SyslogIdentifier=$SERVICE_NAME
 
 [Install]
@@ -181,16 +179,21 @@ fi
 truncate -s 0 $SERVER_CADDY_FILE
 
 # Add the domain if the port and domain do not exist in the caddy file
-if ! grep -q "$DOMAIN" $SERVER_CADDY_FILE && ! grep -q "localhost:$PORT" $SERVER_CADDY_FILE; then
-  echo "$DOMAIN {" >>$SERVER_CADDY_FILE
-  echo "  handle_path /assets/* {" >>$SERVER_CADDY_FILE
-  echo "    root * $GIT_DIR/build/assets" >>$SERVER_CADDY_FILE
-  echo "    file_server" >>$SERVER_CADDY_FILE
-  echo "  }" >>$SERVER_CADDY_FILE
-  echo "  reverse_proxy localhost:$PORT" >>$SERVER_CADDY_FILE
-  echo "  encode gzip" >>$SERVER_CADDY_FILE
-  echo "}" >>$SERVER_CADDY_FILE
-
+if ! grep -q "$DOMAIN" "$SERVER_CADDY_FILE" && ! grep -q "localhost:$PORT" "$SERVER_CADDY_FILE"; then
+  cat <<EOF >>"$SERVER_CADDY_FILE"
+$DOMAIN {
+  handle_path /assets/* {
+    root * $GIT_DIR/build/assets
+    file_server
+  }
+  reverse_proxy localhost:$PORT
+  encode gzip
+  log {
+    output file $DIRECTORY/logs/caddy.log
+    format single_field common_log
+  }
+}
+EOF
 fi
 
 # import statement for the server caddyfile
@@ -199,9 +202,11 @@ if ! grep -q "import $SERVER_CADDY_FILE" $CADDY_FILE; then
 fi
 
 # Add the server caddyfile comment that is used for replacement
-if ! grep -q "# lite-panel start" $CADDY_FILE; then
-  echo "# lite-panel start" >>$CADDY_FILE
-  echo "# lite-panel end" >>$CADDY_FILE
+if ! grep -q "# lite-panel start" "$CADDY_FILE"; then
+  cat <<EOF >>"$CADDY_FILE"
+# lite-panel start
+# lite-panel end
+EOF
 fi
 
 systemctl restart caddy >/dev/null 2>&1
