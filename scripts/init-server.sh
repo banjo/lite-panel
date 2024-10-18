@@ -26,7 +26,6 @@ fi
 echo -e "${GREEN}Welcome to LitePanel! This script will help you setup the server.${NC}"
 echo -e "${YELLOW}Preparing directories...${NC}"
 mkdir -p $DIRECTORY/{apps,logs,db,caddy}
-chmod +x $DIRECTORY/**/*.sh
 
 echo -e "${YELLOW}Installing packages...${NC}"
 apt-get update -y >/dev/null
