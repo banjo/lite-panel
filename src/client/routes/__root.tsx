@@ -1,25 +1,23 @@
-import { Env } from "@/utils/env";
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { SideMenuContainer } from "../components/containers/side-menu-container";
 
 const RootComponent = () => {
-    const env = Env.client();
+    // @ts-ignore - Vite injects the env, but Env does not work here for some reason
+    const isDev = import.meta.env?.DEV;
     return (
         <>
             <div className="flex">
                 <SideMenuContainer />
                 <Outlet />
             </div>
-            {env.DEV ? <TanStackRouterDevtools /> : null}
+            {isDev ? <TanStackRouterDevtools /> : null}
         </>
     );
 };
 
 export const Route = createRootRoute({
-    component: () => {
-        return <RootComponent />;
-    },
+    component: () => <RootComponent />,
     onError: (error: unknown) => {
         console.log("Error", error);
         throw redirect({ to: "/" });
