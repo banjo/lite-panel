@@ -1,4 +1,4 @@
-import { attempt, includes } from "@banjoanton/utils";
+import { attempt, includes, merge, produce } from "@banjoanton/utils";
 import { ApplicationWithReverseProxy } from "prisma/model";
 import { DirectoryService } from "../services/directory-service";
 
@@ -68,7 +68,9 @@ const fromDb = (application: ApplicationWithReverseProxy): App => {
     };
 };
 
+const update = (app: App, props: Partial<App>): App => merge(app, props);
+
 const isDockerComposeApp = (app: App): app is DockerComposeApp => app.type === "DOCKER_COMPOSE";
 const isDockerfileApp = (app: App): app is DockerfileApp => app.type === "DOCKERFILE";
 
-export const App = { from, fromDb, isDockerComposeApp, isDockerfileApp };
+export const App = { from, fromDb, isDockerComposeApp, isDockerfileApp, update };

@@ -18,6 +18,8 @@ const getBySlugSchema = z.object({
     slug: z.string(),
 });
 
+const updateSchema = createSchema.merge(getBySlugSchema);
+
 export const dockerComposeController = new Hono()
     .post("/create", zValidator("json", createSchema), async c => {
         logger.info("Received request to create a docker compose app");
@@ -65,4 +67,24 @@ export const dockerComposeController = new Hono()
         }
 
         return SuccessResponse(c, getResult.data);
+    })
+    .put("/update", zValidator("json", updateSchema), async c => {
+        logger.info("Received request to update a docker compose app");
+        const body = c.req.valid("json");
+
+        const updateResult = await DockerComposeService.updateApp(body.slug, {
+            name: body.name,
+            domain: body.domain,
+            meta: {
+                composeFileContent: body.dockerComposeContent,
+            },
+            proxies: body.ports.map(port => ({ port })),
+        });
+
+        if (!updateResult.success) {
+            logger.error({ message: updateResult.message }, "Failed to update app");
+            return ErrorResponse(c, { message: updateResult.message });
+        }
+
+        return SuccessResponse(c, updateResult.data);
     });

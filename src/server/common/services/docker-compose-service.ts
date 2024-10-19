@@ -1,5 +1,5 @@
 import { createLogger } from "@/utils/logger";
-import { App, DockerComposeMeta } from "../models/app-model";
+import { App, DockerComposeApp, DockerComposeMeta } from "../models/app-model";
 import { AppService, CreateAppProps } from "./app-service";
 import { Result } from "@/utils/result";
 import { DockerShellService } from "./docker-shell-service";
@@ -12,6 +12,20 @@ const logger = createLogger("docker-compose-service");
 type CreateDockerComposeAppProps = CreateAppProps & {
     type: "DOCKER_COMPOSE";
     meta: DockerComposeMeta;
+};
+
+const saveComposeFile = async (app: DockerComposeApp) => {
+    const [_, error] = await wrapAsync(
+        async () =>
+            await fs.writeFile(`${app.directory}/docker-compose.yml`, app.meta.composeFileContent)
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to save compose file");
+        return Result.error(error.message);
+    }
+
+    return Result.ok();
 };
 
 const getDockerComposeApp = async (slug: string) => {
@@ -48,14 +62,11 @@ const createApp = async (createAppProps: CreateDockerComposeAppProps) => {
         return Result.error("App is not a docker compose app");
     }
 
-    const [_, error] = await wrapAsync(
-        async () =>
-            await fs.writeFile(`${app.directory}/docker-compose.yml`, app.meta.composeFileContent)
-    );
+    const composeFileResult = await saveComposeFile(app);
 
-    if (error) {
-        logger.error({ error }, "Failed to create compose file");
-        return Result.error(error.message);
+    if (!composeFileResult.success) {
+        logger.error({ message: composeFileResult.message }, "Failed to create compose file");
+        return Result.error(composeFileResult.message);
     }
 
     const startResult = await DockerShellService.startCompose({ path: app.directory });
@@ -100,4 +111,62 @@ const restartApp = async (slug: string) => {
     return Result.ok(restartResult.data);
 };
 
-export const DockerComposeService = { createApp, restartApp, getApp: getDockerComposeApp };
+const updateApp = async (slug: string, updateProps: Partial<DockerComposeApp>) => {
+    logger.debug({ slug }, "Updating app");
+
+    const appResult = await getDockerComposeApp(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Failed to get app");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    const updatedApp = App.update(app, updateProps);
+
+    if (!App.isDockerComposeApp(updatedApp)) {
+        logger.error({ name: app.name }, "App is not a docker compose app");
+        return Result.error("App is not a docker compose app");
+    }
+
+    const updateResult = await AppService.update(updatedApp);
+
+    if (!updateResult.success) {
+        logger.error({ message: updateResult.message }, "Failed to update app");
+        return Result.error(updateResult.message);
+    }
+
+    const composeFileResult = await saveComposeFile(updatedApp);
+
+    if (!composeFileResult.success) {
+        logger.error({ message: composeFileResult.message }, "Failed to update compose file");
+        return Result.error(composeFileResult.message);
+    }
+
+    const restartResult = await DockerShellService.restartCompose({ path: app.directory });
+
+    if (!restartResult.success) {
+        logger.error(
+            { message: restartResult.message, name: app.name },
+            "Failed to restart compose"
+        );
+        return Result.error(restartResult.message);
+    }
+
+    const caddyReloadResult = await CaddyService.reload();
+
+    if (!caddyReloadResult.success) {
+        logger.error({ message: caddyReloadResult.message }, "Failed to reload caddy");
+        return Result.error(caddyReloadResult.message);
+    }
+
+    return Result.ok(updatedApp);
+};
+
+export const DockerComposeService = {
+    createApp,
+    restartApp,
+    getApp: getDockerComposeApp,
+    updateApp,
+};

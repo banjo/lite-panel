@@ -140,4 +140,26 @@ const getBySlug = async (slug: string) => {
     return Result.ok(app);
 };
 
-export const AppService = { create, getAll, getBySlug };
+const update = async (app: App) => {
+    const [updatedApp, error] = await wrapAsync(
+        async () =>
+            await prisma.application.update({
+                where: { slug: app.slug },
+                data: {
+                    name: app.name,
+                    domain: app.domain,
+                    meta: JSON.stringify(app.meta),
+                },
+                include: { reverseProxies: true },
+            })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to update application in database");
+        return Result.error(error.message);
+    }
+
+    return Result.ok(App.fromDb(updatedApp));
+};
+
+export const AppService = { create, getAll, getBySlug, update };
