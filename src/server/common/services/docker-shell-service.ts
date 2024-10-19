@@ -40,7 +40,18 @@ const startCompose = async ({ path }: DockerShellProps): AsyncResultType<StartCo
     return Result.ok({ output: undefined });
 };
 
+// TODO: same error handling for stopCompose?
 const stopCompose = async ({ path }: DockerShellProps) =>
     ShellService.exec(`docker compose down --remove-orphans`, { path });
 
-export const DockerShellService = { startCompose, stopCompose };
+const restartCompose = async ({ path }: DockerShellProps) => {
+    const stopResult = await stopCompose({ path });
+
+    if (!stopResult.success) {
+        return stopResult;
+    }
+
+    return startCompose({ path });
+};
+
+export const DockerShellService = { startCompose, stopCompose, restartCompose };

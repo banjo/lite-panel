@@ -14,6 +14,24 @@ type CreateDockerComposeAppProps = CreateAppProps & {
     meta: DockerComposeMeta;
 };
 
+const getDockerComposeApp = async (slug: string) => {
+    const appResult = await AppService.getBySlug(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Failed to get app");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    if (!App.isDockerComposeApp(app)) {
+        logger.error({ name: app.name }, "App is not a docker compose app");
+        return Result.error("App is not a docker compose app");
+    }
+
+    return Result.ok(app);
+};
+
 const createApp = async (createAppProps: CreateDockerComposeAppProps) => {
     logger.debug("Creating docker compose app");
     const appResult = await AppService.create(createAppProps);
@@ -57,4 +75,29 @@ const createApp = async (createAppProps: CreateDockerComposeAppProps) => {
     return Result.ok(startResult.data);
 };
 
-export const DockerComposeService = { createApp };
+const restartApp = async (slug: string) => {
+    logger.debug({ slug }, "Restarting app");
+
+    const appResult = await getDockerComposeApp(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Failed to get app");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    const restartResult = await DockerShellService.restartCompose({ path: app.directory });
+
+    if (!restartResult.success) {
+        logger.error(
+            { message: restartResult.message, name: app.name },
+            "Failed to restart compose"
+        );
+        return Result.error(restartResult.message);
+    }
+
+    return Result.ok(restartResult.data);
+};
+
+export const DockerComposeService = { createApp, restartApp };

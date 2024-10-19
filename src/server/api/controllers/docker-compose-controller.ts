@@ -14,6 +14,10 @@ const createSchema = z.object({
     ports: z.array(z.number()),
 });
 
+const restartSchema = z.object({
+    slug: z.string(),
+});
+
 export const dockerComposeController = new Hono()
     .post("/create", zValidator("json", createSchema), async c => {
         logger.info("Received request to create a docker compose app");
@@ -35,6 +39,19 @@ export const dockerComposeController = new Hono()
         }
 
         return SuccessResponse(c, createResult.data);
+    })
+    .post("/restart", zValidator("json", restartSchema), async c => {
+        logger.info("Received request to restart a docker compose app");
+        const body = c.req.valid("json");
+
+        const restartResult = await DockerComposeService.restartApp(body.slug);
+
+        if (!restartResult.success) {
+            logger.error({ message: restartResult.message }, "Failed to restart app");
+            return ErrorResponse(c, { message: restartResult.message });
+        }
+
+        return SuccessResponse(c, restartResult.data);
     })
     .get("/test", async c => {
         return c.json({ message: "Hello test" });

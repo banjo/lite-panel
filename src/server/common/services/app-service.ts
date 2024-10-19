@@ -116,4 +116,28 @@ const getAll = async () => {
     return Result.ok(apps);
 };
 
-export const AppService = { create, getAll };
+const getBySlug = async (slug: string) => {
+    const [application, error] = await wrapAsync(
+        async () =>
+            await prisma.application.findUnique({
+                where: { slug },
+                include: { reverseProxies: true },
+            })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to get application from database");
+        return Result.error(error.message);
+    }
+
+    if (!application) {
+        logger.error({ slug }, "Application not found");
+        return Result.error("Application not found");
+    }
+
+    const app = App.fromDb(application);
+
+    return Result.ok(app);
+};
+
+export const AppService = { create, getAll, getBySlug };
