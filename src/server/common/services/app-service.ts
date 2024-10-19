@@ -99,7 +99,7 @@ const create = async ({ name, proxies, domain }: CreateProps) => {
         return Result.error(addConfigResult.message);
     }
 
-    const updateDefaultResult = await CaddyService.addActiveConfigsToDefault();
+    const updateDefaultResult = await CaddyService.addAppConfigsToDefault();
 
     if (!updateDefaultResult.success) {
         logger.error({ message: updateDefaultResult.message }, "Failed to update default configs");

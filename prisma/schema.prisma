@@ -10,6 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Server configuration for the VPS.
+model Config {
+  id          Int     @id @default(autoincrement())
+  port        Int // The port that the server will run on.
+  domain      String // The domain that the server will run on.
+  serviceName String // The name of the systemctl service that the server will run on.  
+  basicAuth   String? // format: username:password
+}
+
 // A application in Caddy. Often a docker compose file or a project. Can have multiple domains.
 model Application {
   id             Int            @id @default(autoincrement())

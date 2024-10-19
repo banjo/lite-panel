@@ -27,11 +27,15 @@ const PRODUCTION_DIRECTORY = "/data/lite-panel";
 
 const DEFAULT_DIRECTORY = isProduction ? PRODUCTION_DIRECTORY : getDevelopmentDirectory();
 const APPS_DIRECTORY = path.join(DEFAULT_DIRECTORY, "apps");
-const SERVER_DIRECTORY = path.join(DEFAULT_DIRECTORY, "server");
+const CONFIG_DIRECTORY = path.join(DEFAULT_DIRECTORY, "config");
+const CADDY_DIRECTORY = path.join(DEFAULT_DIRECTORY, "caddy");
+const REPO_DIRECTORY = path.join(DEFAULT_DIRECTORY, "repo");
 
 const basePath = () => DEFAULT_DIRECTORY;
 const appsPath = () => APPS_DIRECTORY;
-const serverPath = () => SERVER_DIRECTORY;
+const configPath = () => CONFIG_DIRECTORY;
+const repoPath = () => REPO_DIRECTORY;
+const caddyPath = () => CADDY_DIRECTORY;
 const getAppPath = (slug: string) => path.join(APPS_DIRECTORY, slug);
 
 const createAppDirectory = async (app: App) => {
@@ -74,11 +78,16 @@ const removeAppDirectory = async (slug: string) => {
     return Result.ok();
 };
 
+const buildAssetsPath = () => path.join(REPO_DIRECTORY, "build", "assets");
+
 export const DirectoryService = {
     basePath,
     appsPath,
-    serverPath,
+    configPath,
+    repoPath,
     createAppDirectory,
     removeAppDirectory,
     getAppPath,
+    caddyPath,
+    buildAssetsPath,
 };

@@ -26,7 +26,7 @@ fi
 
 echo -e "${GREEN}Welcome to LitePanel! This script will help you setup the server.${NC}"
 echo -e "${YELLOW}Preparing directories...${NC}"
-mkdir -p $DIRECTORY/{apps,logs,db,caddy}
+mkdir -p $DIRECTORY/{apps,logs,db,caddy,config}
 
 echo -e "${YELLOW}Installing packages...${NC}"
 apt-get update -y >/dev/null
@@ -215,15 +215,23 @@ fi
 echo -e "${BLUE}Do you want to use basic auth for the server? (y/N)${NC}"
 read BASIC_AUTH
 
+BASIC_AUTH_STRING=""
 if [ "$BASIC_AUTH" == "y" ]; then
   echo -e "${BLUE}Please enter the username:${NC}"
   read USERNAME
   echo -e "${BLUE}Please enter the password:${NC}"
   read PASSWORD
 
-  htpasswd -b -c /etc/caddy/.htpasswd $USERNAME $PASSWORD
-  echo -e "${GREEN}Basic auth has been enabled.${NC}"
+  BASIC_AUTH_STRING="$USERNAME:$PASSWORD"
 fi
+
+# Save the most import configuration to config/server-config as json
+echo "{
+  \"domain\": \"$DOMAIN\",
+  \"port\": \"$PORT\",
+  \"serviceName\": \"$SERVICE_NAME\",
+  \"basicAuth\": \"$BASIC_AUTH_STRING\"
+}" >$DIRECTORY/config/server-config.json
 
 systemctl restart caddy >/dev/null 2>&1
 

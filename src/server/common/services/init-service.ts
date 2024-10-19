@@ -1,10 +1,66 @@
 import { createLogger } from "@/utils/logger";
 import { CaddyService } from "./caddy-service";
 import { AppService } from "./app-service";
-import { Result } from "@banjoanton/utils";
+import { isEmpty, Result, wrapAsync } from "@banjoanton/utils";
 import { DirectoryService } from "./directory-service";
+import { prisma } from "@/db";
+import { ConfigService } from "./config-service";
+import { ServerConfig } from "../models/server-config-model";
 
 const logger = createLogger("init-service");
+
+const initConfig = async () => {
+    logger.info("Initializing server config");
+
+    const [count, error] = await wrapAsync(async () => await prisma.config.count());
+
+    if (error) {
+        logger.error({ error }, "Failed to check config count");
+        return Result.error(error.message);
+    }
+
+    if (count > 1) {
+        logger.error("Multiple configs found, only one is allowed");
+        return Result.error("Multiple configs found");
+    }
+
+    const [config, serverError] = await wrapAsync(async () => await prisma.config.findFirst());
+
+    if (serverError) {
+        logger.error({ serverError }, "Failed to get config");
+        return Result.error(serverError.message);
+    }
+
+    if (config) {
+        return Result.ok();
+    }
+
+    logger.info("No configuration found, creating one");
+    const serverConfig = await ConfigService.getServerConfigFromStartup();
+
+    if (!serverConfig) {
+        logger.error("No server config found");
+        return Result.error("No server config found");
+    }
+
+    const [_, createError] = await wrapAsync(async () => {
+        return await prisma.config.create({
+            data: {
+                port: serverConfig.port,
+                domain: serverConfig.domain,
+                basicAuth: isEmpty(serverConfig.basicAuth) ? undefined : serverConfig.basicAuth,
+                serviceName: serverConfig.serviceName,
+            },
+        });
+    });
+
+    if (createError) {
+        logger.error({ createError }, "Failed to create config");
+        return Result.error(createError.message);
+    }
+
+    return Result.ok();
+};
 
 const initApplications = async () => {
     const apps = await AppService.getAll();
@@ -55,12 +111,46 @@ const initApplications = async () => {
     return Result.ok();
 };
 
+/**
+ *  Replace the server caddy file, use server config to creata a new one
+ */
+const initCaddy = async () => {
+    const serverConfig = await ConfigService.getCurrentServerConfig();
+
+    if (!serverConfig.success) {
+        logger.error({ message: serverConfig.message }, "Failed to get server config");
+        return Result.error(serverConfig.message);
+    }
+
+    const serverConfigData = serverConfig.data;
+
+    const config = ServerConfig.fromDb(serverConfigData);
+    const updateResult = await CaddyService.updateServerConfig(config);
+
+    if (!updateResult.success) {
+        logger.error({ message: updateResult.message }, "Failed to update server config");
+        return Result.error(updateResult.message);
+    }
+
+    return Result.ok();
+};
+
 const initServer = async () => {
     logger.info("Initializing server");
 
+    const configResult = await initConfig();
+
+    if (!configResult.success) {
+        logger.error({ message: configResult.message }, "Failed to initialize config");
+        return Result.error(configResult.message);
+    }
+    logger.debug("INIT: Initialized server config");
+
+    await initCaddy();
+    logger.debug("INIT: Initialized Caddy server config");
     await initApplications();
     logger.debug("INIT: Initialized applications");
-    await CaddyService.addActiveConfigsToDefault();
+    await CaddyService.addAppConfigsToDefault();
     logger.debug("INIT: Added active configs to default Caddyfile");
 
     logger.info("Server initialized");
