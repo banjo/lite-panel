@@ -34,7 +34,7 @@ export const dockerComposeController = new Hono()
             return ErrorResponse(c, { message: createResult.message });
         }
 
-        return SuccessResponse(c, { app: createResult.data });
+        return SuccessResponse(c, createResult.data);
     })
     .get("/test", async c => {
         return c.json({ message: "Hello test" });

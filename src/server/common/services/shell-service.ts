@@ -1,6 +1,6 @@
 import { createLogger } from "@/utils/logger";
 import { Result } from "@/utils/result";
-import { AsyncResultType, isEmpty } from "@banjoanton/utils";
+import { AsyncResultType, isDefined, isEmpty } from "@banjoanton/utils";
 import { execa, ExecaError } from "execa";
 
 const logger = createLogger("shell-service");
@@ -11,7 +11,8 @@ type ExecOptions = {
 };
 
 type ExecResult = {
-    message: string;
+    response: string;
+    isError: boolean;
 };
 
 type ExecReturn = AsyncResultType<ExecResult>;
@@ -32,15 +33,17 @@ const exec = async (command: string, options = defaultExecOptions): ExecReturn =
 
         const result = await execa(main, sub, { cwd: path });
 
-        if (!isEmpty(result.stderr)) {
-            logger.error({ stderr: result.stderr }, "Command failed");
-            return Result.error(result.stderr);
-        }
+        const responseArray = result.stdio.filter(l => isDefined(l)).filter(l => !isEmpty(l));
+        const isError = result.failed || !isEmpty(result.stderr);
+        const response = responseArray.at(0)!;
 
-        logger.debug({ stdout: result.stdout }, "Command executed");
-        return Result.ok({ message: result.stdout });
-    } catch (error) {
-        logger.error({ error }, "Command failed");
+        logger.debug({ response, isError }, "Command executed");
+        return Result.ok({ response, isError });
+    } catch (error: any) {
+        logger.error(
+            { command, message: error?.message ?? "Something went wrong" },
+            "Command failed"
+        );
         if (error instanceof ExecaError) {
             return Result.error(error.message);
         } else if (error instanceof Error) {

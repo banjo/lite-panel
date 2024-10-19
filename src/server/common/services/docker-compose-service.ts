@@ -54,7 +54,7 @@ const createApp = async (createAppProps: CreateDockerComposeAppProps) => {
         return Result.error(caddyReloadResult.message);
     }
 
-    return Result.ok(app);
+    return Result.ok(startResult.data);
 };
 
 export const DockerComposeService = { createApp };

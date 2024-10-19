@@ -27,7 +27,7 @@
     },
     "dependencies": {
         "@banjoanton/prettier-config": "^0.1.11",
-        "@banjoanton/utils": "^0.1.94",
+        "@banjoanton/utils": "^0.1.95",
         "@hono/node-server": "^1.13.1",
         "@hono/zod-validator": "^0.4.1",
         "@prisma/client": "5.20.0",
