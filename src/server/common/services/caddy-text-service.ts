@@ -24,7 +24,7 @@ const createServerConfig = ({ assetDirectory, port, domain, basicAuth }: ServerC
     const basicAuthConfig = attempt(() => {
         if (!basicAuth) return "";
         const { username, hashedPassword } = basicAuth;
-        return `basic_auth {\n\t\t${username} ${hashedPassword}\n\t}`;
+        return `basic_auth {\n\t${username} ${hashedPassword}\n}`;
     });
 
     return `${domain} {
