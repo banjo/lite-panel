@@ -162,4 +162,44 @@ const update = async (app: App) => {
     return Result.ok(App.fromDb(updatedApp));
 };
 
-export const AppService = { create, getAll, getBySlug, update };
+const deleteApp = async (slug: string) => {
+    const [application, error] = await wrapAsync(
+        async () =>
+            await prisma.application.findUnique({
+                where: { slug },
+                include: { reverseProxies: true },
+            })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to get application from database");
+        return Result.error(error.message);
+    }
+
+    if (!application) {
+        logger.error({ slug }, "Application not found");
+        return Result.error("Application not found");
+    }
+
+    const app = App.fromDb(application);
+
+    const deleteResult = await DirectoryService.removeAppDirectory(app.slug);
+
+    if (!deleteResult.success) {
+        logger.error({ message: deleteResult.message }, "Failed to delete app directory");
+        return Result.error(deleteResult.message);
+    }
+
+    const [_, deleteAppError] = await wrapAsync(
+        async () => await prisma.application.delete({ where: { slug } })
+    );
+
+    if (deleteAppError) {
+        logger.error({ error: deleteAppError }, "Failed to delete application from database");
+        return Result.error(deleteAppError.message);
+    }
+
+    return Result.ok();
+};
+
+export const AppService = { create, getAll, getBySlug, update, deleteApp };

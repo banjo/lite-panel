@@ -87,4 +87,17 @@ export const dockerComposeController = new Hono()
         }
 
         return SuccessResponse(c, updateResult.data);
+    })
+    .delete("/delete/:slug", zValidator("query", getBySlugSchema), async c => {
+        logger.info("Received request to delete a docker compose app");
+        const { slug } = c.req.valid("query");
+
+        const deleteResult = await DockerComposeService.deleteApp(slug);
+
+        if (!deleteResult.success) {
+            logger.error({ message: deleteResult.message }, "Failed to delete app");
+            return ErrorResponse(c, { message: deleteResult.message });
+        }
+
+        return SuccessResponse(c, { success: true });
     });

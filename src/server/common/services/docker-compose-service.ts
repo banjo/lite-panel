@@ -164,9 +164,46 @@ const updateApp = async (slug: string, updateProps: Partial<DockerComposeApp>) =
     return Result.ok(updatedApp);
 };
 
+const deleteApp = async (slug: string) => {
+    logger.debug({ slug }, "Deleting app");
+
+    const appResult = await getDockerComposeApp(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Failed to get app");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    const stopResult = await DockerShellService.stopCompose({ path: app.directory });
+
+    if (!stopResult.success) {
+        logger.error({ message: stopResult.message, name: app.name }, "Failed to stop compose");
+        return Result.error(stopResult.message);
+    }
+
+    const deleteResult = await AppService.deleteApp(app.slug);
+
+    if (!deleteResult.success) {
+        logger.error({ message: deleteResult.message }, "Failed to delete app");
+        return Result.error(deleteResult.message);
+    }
+
+    const caddyReloadResult = await CaddyService.reload();
+
+    if (!caddyReloadResult.success) {
+        logger.error({ message: caddyReloadResult.message }, "Failed to reload caddy");
+        return Result.error(caddyReloadResult.message);
+    }
+
+    return Result.ok();
+};
+
 export const DockerComposeService = {
     createApp,
     restartApp,
     getApp: getDockerComposeApp,
     updateApp,
+    deleteApp,
 };
