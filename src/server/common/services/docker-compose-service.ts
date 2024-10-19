@@ -100,4 +100,4 @@ const restartApp = async (slug: string) => {
     return Result.ok(restartResult.data);
 };
 
-export const DockerComposeService = { createApp, restartApp };
+export const DockerComposeService = { createApp, restartApp, getApp: getDockerComposeApp };

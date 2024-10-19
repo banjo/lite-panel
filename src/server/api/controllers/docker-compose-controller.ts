@@ -14,7 +14,7 @@ const createSchema = z.object({
     ports: z.array(z.number()),
 });
 
-const restartSchema = z.object({
+const getBySlugSchema = z.object({
     slug: z.string(),
 });
 
@@ -40,7 +40,7 @@ export const dockerComposeController = new Hono()
 
         return SuccessResponse(c, createResult.data);
     })
-    .post("/restart", zValidator("json", restartSchema), async c => {
+    .post("/restart", zValidator("json", getBySlugSchema), async c => {
         logger.info("Received request to restart a docker compose app");
         const body = c.req.valid("json");
 
@@ -53,6 +53,16 @@ export const dockerComposeController = new Hono()
 
         return SuccessResponse(c, restartResult.data);
     })
-    .get("/test", async c => {
-        return c.json({ message: "Hello test" });
+    .get("/get/:slug", zValidator("query", getBySlugSchema), async c => {
+        logger.info("Received request to get a docker compose app");
+        const { slug } = c.req.valid("query");
+
+        const getResult = await DockerComposeService.getApp(slug);
+
+        if (!getResult.success) {
+            logger.error({ message: getResult.message }, "Failed to get app");
+            return ErrorResponse(c, { message: getResult.message });
+        }
+
+        return SuccessResponse(c, getResult.data);
     });
