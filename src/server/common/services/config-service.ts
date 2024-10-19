@@ -36,7 +36,7 @@ const getServerConfigFromStartup = async () => {
         return undefined;
     }
 
-    logger.info("Basic auth file found");
+    logger.info("Server config file found");
     return content;
 };
 

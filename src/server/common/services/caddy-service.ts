@@ -1,6 +1,6 @@
 import { createLogger } from "@/utils/logger";
 import { isProduction } from "@/utils/runtime";
-import { isEmpty, Result, wrapAsync } from "@banjoanton/utils";
+import { attemptAsync, isEmpty, Result, wrapAsync } from "@banjoanton/utils";
 import fs from "fs-extra";
 import { globby } from "globby";
 import path from "path";
@@ -9,6 +9,7 @@ import { CaddyTextService } from "./caddy-text-service";
 import { DirectoryService, getDevelopmentDirectory } from "./directory-service";
 import { ShellService } from "./shell-service";
 import { ServerConfig } from "../models/server-config-model";
+import { SecurityService } from "./security-service";
 
 const logger = createLogger("caddy-service");
 const DEFAULT_CADDYFILE = isProduction
@@ -129,11 +130,28 @@ const readServerConfig = async () => await readConfig(SERVER_CADDYFILE);
 
 const updateServerConfig = async (serverConfig: ServerConfig) => {
     const assetDirectory = DirectoryService.buildAssetsPath();
+
+    const basicAuthConfig = await attemptAsync(async () => {
+        const basicAuth = serverConfig.basicAuth;
+        if (!basicAuth) return undefined;
+
+        const splitted = basicAuth.split(":") ?? [];
+        if (isEmpty(splitted)) return undefined;
+        const [username, password] = splitted;
+        if (isEmpty(username) || isEmpty(password)) return undefined;
+
+        const hashedPassword = await SecurityService.hashPassword(password);
+        return {
+            username,
+            hashedPassword,
+        };
+    });
+
     const content = CaddyTextService.createServerConfig({
         domain: serverConfig.domain,
         port: serverConfig.port,
         assetDirectory,
-        basicAuth: serverConfig.basicAuth,
+        basicAuth: basicAuthConfig ?? undefined,
     });
 
     const [_, error] = await wrapAsync(async () => await fs.outputFile(SERVER_CADDYFILE, content));

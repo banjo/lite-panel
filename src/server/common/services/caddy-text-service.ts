@@ -1,4 +1,4 @@
-import { attempt } from "@banjoanton/utils";
+import { attempt, attemptAsync } from "@banjoanton/utils";
 import { App, AppProxy } from "../models/app-model";
 import { SecurityService } from "./security-service";
 
@@ -15,26 +15,17 @@ type ServerConfigProps = {
     domain: string;
     port: number;
     assetDirectory: string;
-    /**
-     * Basic auth in the format of "username:password"
-     */
-    basicAuth?: string;
+    basicAuth?: {
+        username: string;
+        hashedPassword: string;
+    };
 };
 const createServerConfig = ({ assetDirectory, port, domain, basicAuth }: ServerConfigProps) => {
-    const basicAuthConfig = attempt(
-        () => {
-            if (!basicAuth) return "";
-            const [username, password] = basicAuth.split(":") ?? [];
-            const hashedPassword = password ? SecurityService.hashPassword(password) : undefined;
-
-            if (!username || !hashedPassword) {
-                return "";
-            }
-
-            return `basic_auth {\n${username} ${hashedPassword}\n}`;
-        },
-        { fallbackValue: "" }
-    );
+    const basicAuthConfig = attempt(() => {
+        if (!basicAuth) return "";
+        const { username, hashedPassword } = basicAuth;
+        return `basic_auth {\n\t\t${username} ${hashedPassword}\n\t}`;
+    });
 
     return `${domain} {
     handle_path /assets/* {
