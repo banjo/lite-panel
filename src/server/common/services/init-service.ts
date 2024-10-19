@@ -36,7 +36,7 @@ const initConfig = async () => {
         return Result.ok();
     }
 
-    logger.info("No configuration found, creating one");
+    logger.info("No configuration found in the database, creating one");
     const serverConfig = await ConfigService.getServerConfigFromStartup();
 
     if (!serverConfig) {

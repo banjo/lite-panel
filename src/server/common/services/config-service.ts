@@ -18,14 +18,14 @@ type StartupServerConfig = {
 };
 
 const getServerConfigFromStartup = async () => {
-    logger.info("Checking for server config file");
     const directory = DirectoryService.configPath();
     const filePath = path.join(directory, "server-config.json");
+    logger.info({ filePath }, "Checking for server config file");
 
     const fileExists = await fs.exists(filePath);
 
     if (!fileExists) {
-        logger.info("No server config file found");
+        logger.info({ filePath }, "No server config file found");
         return undefined;
     }
 
