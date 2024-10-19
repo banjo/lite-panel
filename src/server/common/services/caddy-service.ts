@@ -81,7 +81,7 @@ const validateFile = async (path: string) => {
 };
 
 // SERVICE
-const restart = async () => await ShellService.exec(`systemctl reload caddy`);
+const reload = async () => await ShellService.exec(`systemctl reload caddy`);
 const start = async () => await ShellService.exec(`systemctl start caddy`);
 const stop = async () => await ShellService.exec(`systemctl stop caddy`);
 
@@ -192,7 +192,7 @@ const addConfigToPath = async (app: App) => {
 };
 
 export const CaddyService = {
-    restart,
+    reload,
     start,
     stop,
     readDefaultConfig,

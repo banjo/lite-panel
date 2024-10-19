@@ -154,6 +154,7 @@ const initServer = async () => {
     logger.debug("INIT: Initialized applications");
     await CaddyService.addAppConfigsToDefault();
     logger.debug("INIT: Added active configs to default Caddyfile");
+    await CaddyService.reload();
 
     logger.info("Server initialized");
 };
