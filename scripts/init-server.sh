@@ -123,7 +123,7 @@ SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
 # Create caddyfile for the server
 # Ask the user for which domain to use for the server ui
 echo -e "${YELLOW}Configuring Caddy...${NC}"
-echo -e "${BLUE}Please enter your domain to LitePanel UI (e.g. example.com):${NC}"
+echo -e "${BLUE}Please enter your domain (No HTTPS or /, e.g. example.com):${NC}"
 read DOMAIN
 
 echo -e "${BLUE}Be sure to point an A record to the domain ($DOMAIN) before continuing.${NC}"
