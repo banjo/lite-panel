@@ -133,7 +133,7 @@ const updateServerConfig = async (serverConfig: ServerConfig) => {
         domain: serverConfig.domain,
         port: serverConfig.port,
         assetDirectory,
-        basicAuth: isEmpty(serverConfig.basicAuth) ? undefined : serverConfig.basicAuth,
+        basicAuth: serverConfig.basicAuth,
     });
 
     const [_, error] = await wrapAsync(async () => await fs.outputFile(SERVER_CADDYFILE, content));

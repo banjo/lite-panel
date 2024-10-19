@@ -1,6 +1,6 @@
 import { createLogger } from "@/utils/logger";
 import { attemptAsync, wrapAsync } from "@banjoanton/utils";
-import { exists, readJson } from "fs-extra";
+import fs from "fs-extra";
 import path from "node:path";
 import { ServerConfig } from "../models/server-config-model";
 import { DirectoryService } from "./directory-service";
@@ -14,14 +14,22 @@ const getServerConfigFromStartup = async () => {
     const directory = DirectoryService.configPath();
     const filePath = path.join(directory, "server-config.json");
 
-    const fileExists = await exists(filePath);
+    const fileExists = await fs.exists(filePath);
 
     if (!fileExists) {
         logger.info("No server config file found");
         return undefined;
     }
 
-    const content = await attemptAsync<ServerConfig>(async () => await readJson(filePath, "utf8"));
+    const content = await attemptAsync<ServerConfig>(async () => {
+        const res = await fs.readJson(filePath);
+        return {
+            port: Number(res.port),
+            domain: res.domain,
+            serviceName: res.serviceName,
+            basicAuth: res.basicAuth,
+        };
+    });
 
     if (!content) {
         logger.error("Could not read server config file");

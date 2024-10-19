@@ -4,7 +4,7 @@ export type ServerConfig = {
     domain: string;
     port: number;
     serviceName: string;
-    basicAuth: string;
+    basicAuth?: string;
 };
 
 export const ServerConfig = {
@@ -13,6 +13,6 @@ export const ServerConfig = {
         domain: config.domain,
         port: config.port,
         serviceName: config.serviceName,
-        basicAuth: config.basicAuth ?? "",
+        basicAuth: config.basicAuth ?? undefined,
     }),
 };
