@@ -6,6 +6,7 @@ import { DirectoryService } from "./directory-service";
 import { prisma } from "@/db";
 import { ConfigService } from "./config-service";
 import { ServerConfig } from "../models/server-config-model";
+import { SecurityService } from "./security-service";
 
 const logger = createLogger("init-service");
 
@@ -48,7 +49,8 @@ const initConfig = async () => {
             data: {
                 port: serverConfig.port,
                 domain: serverConfig.domain,
-                basicAuth: isEmpty(serverConfig.basicAuth) ? undefined : serverConfig.basicAuth,
+                username: serverConfig.username,
+                hashedPassword: serverConfig.hashedPassword,
                 serviceName: serverConfig.serviceName,
             },
         });

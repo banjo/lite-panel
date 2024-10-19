@@ -4,15 +4,17 @@ export type ServerConfig = {
     domain: string;
     port: number;
     serviceName: string;
-    basicAuth?: string;
+    username?: string;
+    hashedPassword?: string;
 };
 
 export const ServerConfig = {
-    from: (config: ServerConfig) => config,
-    fromDb: (config: Config) => ({
+    from: (config: ServerConfig): ServerConfig => config,
+    fromDb: (config: Config): ServerConfig => ({
         domain: config.domain,
         port: config.port,
         serviceName: config.serviceName,
-        basicAuth: config.basicAuth ?? undefined,
+        username: config.username ?? undefined,
+        hashedPassword: config.hashedPassword ?? undefined,
     }),
 };

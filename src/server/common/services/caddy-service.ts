@@ -1,6 +1,6 @@
 import { createLogger } from "@/utils/logger";
 import { isProduction } from "@/utils/runtime";
-import { attemptAsync, isEmpty, Result, wrapAsync } from "@banjoanton/utils";
+import { attemptAsync, isDefined, isEmpty, Result, wrapAsync } from "@banjoanton/utils";
 import fs from "fs-extra";
 import { globby } from "globby";
 import path from "path";
@@ -131,27 +131,16 @@ const readServerConfig = async () => await readConfig(SERVER_CADDYFILE);
 const updateServerConfig = async (serverConfig: ServerConfig) => {
     const assetDirectory = DirectoryService.buildAssetsPath();
 
-    const basicAuthConfig = await attemptAsync(async () => {
-        const basicAuth = serverConfig.basicAuth;
-        if (!basicAuth) return undefined;
-
-        const splitted = basicAuth.split(":") ?? [];
-        if (isEmpty(splitted)) return undefined;
-        const [username, password] = splitted;
-        if (isEmpty(username) || isEmpty(password)) return undefined;
-
-        const hashedPassword = await SecurityService.hashPassword(password);
-        return {
-            username,
-            hashedPassword,
-        };
-    });
+    const basicAuth =
+        isDefined(serverConfig.username) && isDefined(serverConfig.hashedPassword)
+            ? { username: serverConfig.username, hashedPassword: serverConfig.hashedPassword }
+            : undefined;
 
     const content = CaddyTextService.createServerConfig({
         domain: serverConfig.domain,
         port: serverConfig.port,
         assetDirectory,
-        basicAuth: basicAuthConfig ?? undefined,
+        basicAuth,
     });
 
     const [_, error] = await wrapAsync(async () => await fs.outputFile(SERVER_CADDYFILE, content));
