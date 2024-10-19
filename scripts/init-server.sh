@@ -116,43 +116,6 @@ pnpm run db:generate >/dev/null 2>&1
 pnpm build >/dev/null 2>&1
 DATABASE_URL="file:$DATABASE_FILE" pnpm run db:migrate:prod >/dev/null 2>&1
 
-if [ -f "$SERVICE_FILE" ]; then
-  systemctl stop $SERVICE_NAME.service >/dev/null 2>&1
-  systemctl disable $SERVICE_NAME.service >/dev/null 2>&1
-  rm $SERVICE_FILE >/dev/null 2>&1
-fi
-
-sudo bash -c "cat > $SERVICE_FILE" <<EOF
-[Unit]
-Description=LitePanel Server
-After=network.target
-
-[Service]
-Type=simple
-User=$USER
-WorkingDirectory=$GIT_DIR/build
-ExecStart=/usr/bin/node index.js
-Restart=always
-Environment="NODE_ENV=production"
-Environment="VITE_SERVER_URL=http://localhost:$PORT"
-Environment="PORT=$PORT"
-Environment="DATABASE_URL=file:$DATABASE_FILE"
-RestartSec=10
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=$SERVICE_NAME
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-# Reload systemctl to acknowledge new service
-sudo systemctl daemon-reload >/dev/null 2>&1
-
-# Enable and start the service
-sudo systemctl enable $SERVICE_NAME.service >/dev/null 2>&1
-sudo systemctl start $SERVICE_NAME.service >/dev/null 2>&1
-
 # ADD CADDY CONFIG FOR THE SERVER
 CADDY_FILE=/etc/caddy/Caddyfile
 SERVER_CADDY_FILE=$DIRECTORY/caddy/Caddyfile
@@ -234,6 +197,44 @@ echo "{
 }" >$DIRECTORY/config/server-config.json
 
 systemctl restart caddy >/dev/null 2>&1
+
+echo -e "${YELLOW}Starting the server...${NC}"
+if [ -f "$SERVICE_FILE" ]; then
+  systemctl stop $SERVICE_NAME.service >/dev/null 2>&1
+  systemctl disable $SERVICE_NAME.service >/dev/null 2>&1
+  rm $SERVICE_FILE >/dev/null 2>&1
+fi
+
+sudo bash -c "cat > $SERVICE_FILE" <<EOF
+[Unit]
+Description=LitePanel Server
+After=network.target
+
+[Service]
+Type=simple
+User=$USER
+WorkingDirectory=$GIT_DIR/build
+ExecStart=/usr/bin/node index.js
+Restart=always
+Environment="NODE_ENV=production"
+Environment="VITE_SERVER_URL=http://localhost:$PORT"
+Environment="PORT=$PORT"
+Environment="DATABASE_URL=file:$DATABASE_FILE"
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=$SERVICE_NAME
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemctl to acknowledge new service
+sudo systemctl daemon-reload >/dev/null 2>&1
+
+# Enable and start the service
+sudo systemctl enable $SERVICE_NAME.service >/dev/null 2>&1
+sudo systemctl start $SERVICE_NAME.service >/dev/null 2>&1
 
 echo -e "${GREEN}Initalization complete.${NC}"
 echo -e "${GREEN}You can now access the server at https://$DOMAIN${NC}"
