@@ -18,7 +18,7 @@ type ExecReturn = AsyncResultType<ExecResult>;
 
 const defaultExecOptions: ExecOptions = {
     path: undefined,
-    sudo: true,
+    sudo: false,
 };
 
 const exec = async (command: string, options = defaultExecOptions): ExecReturn => {

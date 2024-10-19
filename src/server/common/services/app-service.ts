@@ -1,39 +1,22 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
 import { isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
-import { App, AppProxy } from "../models/app-model";
+import { App, AppProxy, AppType } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
 
 const logger = createLogger("app-service");
 
-type CreateProps = {
+export type CreateAppProps = {
     name: string;
     domain: string;
     proxies: AppProxy[];
+    type: AppType;
+    meta: Record<string, any>;
 };
 
-const create = async ({ name, proxies, domain }: CreateProps) => {
+const create = async ({ name, proxies, domain, type, meta }: CreateAppProps) => {
     const slug = uuid();
-
-    const [result, error] = await wrapAsync(
-        async () =>
-            await prisma.application.findUnique({
-                where: {
-                    slug,
-                },
-            })
-    );
-
-    if (error) {
-        logger.error({ message: error.message }, "Failed to look for application");
-        return Result.error(error.message);
-    }
-
-    if (result) {
-        logger.error({ slug }, "Application slug exists");
-        return Result.error("Application slug exists");
-    }
 
     const ports = proxies.map(proxy => proxy.port);
     const [proxiesWithSamePort, portError] = await wrapAsync(async () => {
@@ -63,6 +46,8 @@ const create = async ({ name, proxies, domain }: CreateProps) => {
                 name,
                 slug,
                 domain,
+                type,
+                meta: JSON.stringify(meta),
                 reverseProxies: {
                     createMany: {
                         data: proxies.map(proxy => ({
@@ -106,7 +91,14 @@ const create = async ({ name, proxies, domain }: CreateProps) => {
         return Result.error(updateDefaultResult.message);
     }
 
-    return Result.ok();
+    const reloadResult = await CaddyService.reload();
+
+    if (!reloadResult.success) {
+        logger.error({ message: reloadResult.message }, "Failed to reload Caddy");
+        return Result.error(reloadResult.message);
+    }
+
+    return Result.ok(app);
 };
 
 const getAll = async () => {

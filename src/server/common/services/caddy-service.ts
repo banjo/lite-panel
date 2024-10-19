@@ -81,7 +81,10 @@ const validateFile = async (path: string) => {
 };
 
 // SERVICE
-const reload = async () => await ShellService.exec(`systemctl reload caddy`);
+const reload = async () => {
+    if (!isProduction) return Result.ok();
+    return await ShellService.exec(`systemctl reload caddy`);
+};
 const start = async () => await ShellService.exec(`systemctl start caddy`);
 const stop = async () => await ShellService.exec(`systemctl stop caddy`);
 

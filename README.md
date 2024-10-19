@@ -15,7 +15,7 @@ chmod +x ./scripts/*
 pnpm db:generate
 
 # Run the init script for local development
-./scripts/init-dev-files.sh
+pnpm init:dev
 
 # Start development server
 pnpm dev

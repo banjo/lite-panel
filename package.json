@@ -22,7 +22,8 @@
         "typecheck": "tsc --noEmit",
         "lint": "eslint .",
         "format": "prettier --write .",
-        "init:dev-files": "./scripts/init-dev-files.sh"
+        "init:files": "./scripts/init-dev-files.sh",
+        "init:dev": "run-p db:reset init:files"
     },
     "dependencies": {
         "@banjoanton/prettier-config": "^0.1.11",

@@ -7,6 +7,11 @@ async function main() {
             name: "Application",
             slug: uuid(),
             domain: "www.google.se",
+            type: "DOCKER_COMPOSE",
+            meta: JSON.stringify({
+                composeFileContent:
+                    "version: '3'\n\nservices:\n  web:\n    image: 'nginx:alpine'\n    ports:\n      - 80:80",
+            }),
             reverseProxies: {
                 create: {
                     port: 3000,
