@@ -1,22 +1,19 @@
 import type { AppType } from "@/server/common/models/app-model";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { Cpu, HardDrive, MemoryStick, Plus, Server, Wifi } from "lucide-react";
+import { Plus } from "lucide-react";
 import { client } from "../client";
 import { queryClient } from "../common/providers/query-provider";
 import { FetchService } from "../common/services/fetch-service";
+import { ServerInformationContainer } from "../components/containers/server-information-container";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { systemInformationQueryOptions } from "../queries/system-information-query";
 
 const runningAppsQuery = queryOptions({
     queryKey: ["running-apps"],
     queryFn: async () => await FetchService.queryByClient(() => client.api.app.get.$get()),
-});
-
-const systemInformationQuery = queryOptions({
-    queryKey: ["system-information"],
-    queryFn: async () => await FetchService.queryByClient(() => client.api.system.info.$get()),
 });
 
 const appTypeTranslations: Record<AppType, string> = {
@@ -61,47 +58,6 @@ const RunningAppsContainer = () => {
     );
 };
 
-const ServerInformationContainer = () => {
-    const { data: serverInfo, isLoading } = useSuspenseQuery(systemInformationQuery);
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Server Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-                {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
-                <ul className="space-y-4">
-                    <li className="flex items-center">
-                        <Wifi className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">IP:</span>
-                        {serverInfo.ipAddress}
-                    </li>
-                    <li className="flex items-center">
-                        <Server className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">OS:</span>
-                        {serverInfo.os}
-                    </li>
-                    <li className="flex items-center">
-                        <Cpu className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">CPU:</span>
-                        {serverInfo.cpuCores}
-                    </li>
-                    <li className="flex items-center">
-                        <MemoryStick className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">RAM:</span>
-                        {serverInfo.totalMemGB} GB
-                    </li>
-                    <li className="flex items-center">
-                        <HardDrive className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">Storage:</span>
-                        {serverInfo.diskSizeGB} GB
-                    </li>
-                </ul>
-            </CardContent>
-        </Card>
-    );
-};
-
 const Index = () => {
     return (
         <div className="container mx-auto p-4">
@@ -126,6 +82,9 @@ const Index = () => {
 export const Route = createFileRoute("/")({
     component: Index,
     loader: async () => {
-        await queryClient.ensureQueryData(runningAppsQuery);
+        await Promise.all([
+            await queryClient.ensureQueryData(runningAppsQuery),
+            await queryClient.ensureQueryData(systemInformationQueryOptions),
+        ]);
     },
 });
