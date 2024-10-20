@@ -2,26 +2,19 @@ import { systemInformationQueryOptions } from "@/client/queries/system-informati
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { Cpu, HardDrive, MemoryStick, Server, Wifi } from "lucide-react";
 import { PropsWithChildren } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { CardContainer } from "../shared/card-container";
+import { MutedInfo } from "../shared/muted-info";
 
-const Wrapper = ({ children }: PropsWithChildren) => {
-    return (
-        <Card>
-            <CardHeader>
-                <CardTitle>Server Information</CardTitle>
-            </CardHeader>
-
-            <CardContent>{children}</CardContent>
-        </Card>
-    );
-};
+const Wrapper = ({ children }: PropsWithChildren) => (
+    <CardContainer title="Server Information">{children}</CardContainer>
+);
 
 export const ServerInformationContainer = () => {
     const { data: serverInfo, isLoading, error } = useSuspenseQuery(systemInformationQueryOptions);
     if (isLoading) {
         return (
             <Wrapper>
-                <p className="text-muted-foreground">Loading...</p>
+                <MutedInfo text="Loading..." />
             </Wrapper>
         );
     }
@@ -29,7 +22,7 @@ export const ServerInformationContainer = () => {
     if (error) {
         return (
             <Wrapper>
-                <p className="text-muted-foreground">Ops, something went wrong</p>
+                <MutedInfo text="Error loading server information" />
             </Wrapper>
         );
     }

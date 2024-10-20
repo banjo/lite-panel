@@ -5,7 +5,7 @@ import { ErrorResponse, SuccessResponse } from "../controller-model";
 
 const logger = createLogger("app-controller");
 
-export const appController = new Hono().get("/get", async c => {
+export const appsController = new Hono().get("/get", async c => {
     logger.info("Received request to get all apps");
 
     const appsResult = await AppService.getAll();

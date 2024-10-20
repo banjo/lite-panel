@@ -1,9 +1,9 @@
 import { createLogger } from "@/utils/logger";
 import { AsyncResultType, Result } from "@banjoanton/utils";
+import { publicIpv4 } from "public-ip";
 import si from "systeminformation";
-import { publicIp, publicIpv4, publicIpv6 } from "public-ip";
 
-const logger = createLogger("system-service");
+const logger = createLogger("server-service");
 
 type SystemInformation = {
     cpuCores: number;
@@ -45,4 +45,4 @@ const getInfo = async (): AsyncResultType<SystemInformation> => {
     }
 };
 
-export const SystemService = { getInfo };
+export const ServerService = { getInfo };
