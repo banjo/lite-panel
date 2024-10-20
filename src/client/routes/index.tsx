@@ -1,17 +1,22 @@
-import type { App, AppType } from "@/server/common/models/app-model";
+import type { AppType } from "@/server/common/models/app-model";
 import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { Cpu, HardDrive, MemoryStick, Plus, Server, Wifi } from "lucide-react";
+import { client } from "../client";
 import { queryClient } from "../common/providers/query-provider";
+import { FetchService } from "../common/services/fetch-service";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { client } from "../client";
-import { FetchService } from "../common/services/fetch-service";
 
 const runningAppsQuery = queryOptions({
     queryKey: ["running-apps"],
     queryFn: async () => await FetchService.queryByClient(() => client.api.app.get.$get()),
+});
+
+const systemInformationQuery = queryOptions({
+    queryKey: ["system-information"],
+    queryFn: async () => await FetchService.queryByClient(() => client.api.system.info.$get()),
 });
 
 const appTypeTranslations: Record<AppType, string> = {
@@ -57,44 +62,39 @@ const RunningAppsContainer = () => {
 };
 
 const ServerInformationContainer = () => {
-    const serverInfo = {
-        ip: "192.168.1.100",
-        cpu: "4 cores",
-        ram: "16 GB",
-        storage: "500 GB SSD",
-        bandwidth: "1 Gbps",
-    };
+    const { data: serverInfo, isLoading } = useSuspenseQuery(systemInformationQuery);
     return (
         <Card>
             <CardHeader>
                 <CardTitle>Server Information</CardTitle>
             </CardHeader>
             <CardContent>
+                {isLoading ? <p className="text-muted-foreground">Loading...</p> : null}
                 <ul className="space-y-4">
                     <li className="flex items-center">
+                        <Wifi className="mr-2 h-4 w-4" />
+                        <span className="font-medium mr-2">IP:</span>
+                        {serverInfo.ipAddress}
+                    </li>
+                    <li className="flex items-center">
                         <Server className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">IP Address:</span>
-                        {serverInfo.ip}
+                        <span className="font-medium mr-2">OS:</span>
+                        {serverInfo.os}
                     </li>
                     <li className="flex items-center">
                         <Cpu className="mr-2 h-4 w-4" />
                         <span className="font-medium mr-2">CPU:</span>
-                        {serverInfo.cpu}
+                        {serverInfo.cpuCores}
                     </li>
                     <li className="flex items-center">
                         <MemoryStick className="mr-2 h-4 w-4" />
                         <span className="font-medium mr-2">RAM:</span>
-                        {serverInfo.ram}
+                        {serverInfo.totalMemGB} GB
                     </li>
                     <li className="flex items-center">
                         <HardDrive className="mr-2 h-4 w-4" />
                         <span className="font-medium mr-2">Storage:</span>
-                        {serverInfo.storage}
-                    </li>
-                    <li className="flex items-center">
-                        <Wifi className="mr-2 h-4 w-4" />
-                        <span className="font-medium mr-2">Bandwidth:</span>
-                        {serverInfo.bandwidth}
+                        {serverInfo.diskSizeGB} GB
                     </li>
                 </ul>
             </CardContent>
