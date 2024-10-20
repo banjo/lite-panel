@@ -1,7 +1,7 @@
 import { useLocation } from "@tanstack/react-router";
 import { AppWindow, LayoutDashboard, Logs } from "lucide-react";
 import { useState } from "react";
-import { SideMenu } from "../shared";
+import { SideMenu } from "../shared/sidemenu/sidemenu";
 
 export const SideMenuContainer = () => {
     const { pathname } = useLocation();

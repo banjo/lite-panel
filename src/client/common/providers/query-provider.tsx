@@ -2,7 +2,7 @@ import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-qu
 import { PropsWithChildren } from "react";
 import { ApiError } from "../models/api-error";
 
-const queryClient = new QueryClient({
+export const queryClient = new QueryClient({
     queryCache: new QueryCache({
         onError: (error: Error) => {
             // TODO: Handle error

@@ -6,7 +6,7 @@ import { Tooltip } from "./tooltip";
 
 type Props = {
     children: ReactNode;
-    tooltip: string;
+    tooltip?: string;
     show: boolean;
     animate?: HTMLMotionProps<"div">;
 } & BadgeProps;

@@ -20,7 +20,7 @@ const getBySlugSchema = z.object({
 
 const updateSchema = createSchema.merge(getBySlugSchema);
 
-export const dockerComposeController = new Hono()
+export const composeController = new Hono()
     .post("/create", zValidator("json", createSchema), async c => {
         logger.info("Received request to create a docker compose app");
         const body = c.req.valid("json");
