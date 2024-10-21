@@ -1,12 +1,11 @@
-import { createLogger } from "@/utils/logger";
-import { CaddyService } from "./caddy-service";
-import { AppService } from "./app-service";
-import { isEmpty, Result, wrapAsync } from "@banjoanton/utils";
-import { DirectoryService } from "./directory-service";
 import { prisma } from "@/db";
-import { ConfigService } from "./config-service";
+import { createLogger } from "@/utils/logger";
+import { Result, wrapAsync } from "@banjoanton/utils";
 import { ServerConfig } from "../models/server-config-model";
-import { SecurityService } from "./security-service";
+import { AppService } from "./app-service";
+import { CaddyService } from "./caddy-service";
+import { ConfigService } from "./config-service";
+import { DirectoryService } from "./directory-service";
 
 const logger = createLogger("init-service");
 

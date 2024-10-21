@@ -10,6 +10,8 @@ import { DirectoryService, getDevelopmentDirectory } from "./directory-service";
 import { ShellService } from "./shell-service";
 import { ServerConfig } from "../models/server-config-model";
 import { SecurityService } from "./security-service";
+import { prisma } from "@/db";
+import { ConfigService } from "./config-service";
 
 const logger = createLogger("caddy-service");
 const DEFAULT_CADDYFILE = isProduction
@@ -153,7 +155,30 @@ const updateServerConfig = async (serverConfig: ServerConfig) => {
         return Result.error(error.message);
     }
 
+    const reloadResult = await reload();
+
+    if (!reloadResult.success) {
+        logger.error({ message: reloadResult.message }, "Failed to reload Caddy");
+        return Result.error(reloadResult.message);
+    }
+
     return Result.ok();
+};
+
+const updateBasicAuth = async (username: string, hashedPassword: string) => {
+    const serverConfigResult = await ConfigService.getCurrentServerConfig();
+
+    if (!serverConfigResult.success) {
+        logger.error("Could not parse server config");
+        return Result.error("Could not parse server config");
+    }
+
+    const updatedServerConfig: ServerConfig = {
+        ...serverConfigResult.data,
+        username,
+        hashedPassword,
+    };
+    return await updateServerConfig(updatedServerConfig);
 };
 
 // APP CONFIGS
@@ -207,4 +232,5 @@ export const CaddyService = {
     addConfigToPath,
     readServerConfig,
     updateServerConfig,
+    updateBasicAuth,
 };

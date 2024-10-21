@@ -5,7 +5,8 @@ import { ServerInformationContainer } from "../components/containers/server-info
 import { Button } from "../components/ui/button";
 import { allAppsEnsureData } from "../queries/app-overview-query";
 import { systemInformationEnsureData } from "../queries/system-information-query";
-import { BasicAuthContainer } from "../components/containers/basic-auth-container";
+import { authInfoEnsureData } from "../queries/auth-info-query";
+import { AuthContainer } from "../components/containers/auth-container";
 
 const Index = () => {
     return (
@@ -25,7 +26,7 @@ const Index = () => {
                         <ServerInformationContainer />
                     </div>
                     <div className="flex-1 h-full">
-                        <BasicAuthContainer />
+                        <AuthContainer />
                     </div>
                 </div>
             </div>
@@ -36,6 +37,6 @@ const Index = () => {
 export const Route = createFileRoute("/")({
     component: Index,
     loader: async () => {
-        await Promise.all([allAppsEnsureData, systemInformationEnsureData]);
+        await Promise.all([allAppsEnsureData, systemInformationEnsureData, authInfoEnsureData]);
     },
 });

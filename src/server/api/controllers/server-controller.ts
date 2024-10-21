@@ -3,6 +3,9 @@ import { createLogger } from "@/utils/logger";
 import { Hono } from "hono";
 import { ErrorResponse, SuccessResponse } from "../controller-model";
 import { ConfigService } from "@/server/common/services/config-service";
+import { zValidator } from "@hono/zod-validator";
+import { AuthLoginSchema } from "@/models/auth-login-model";
+import { SecurityService } from "@/server/common/services/security-service";
 
 const logger = createLogger("server-controller");
 
@@ -30,9 +33,23 @@ export const serverController = new Hono()
         }
 
         const authInfo = {
-            username: serverConfigResult.data.username,
+            username: serverConfigResult.data.username ?? undefined,
             isActive: Boolean(serverConfigResult.data.hashedPassword),
         };
 
         return SuccessResponse(c, authInfo);
+    })
+    .post("/auth", zValidator("json", AuthLoginSchema), async c => {
+        logger.info("Received request to update basic auth information");
+
+        const authLogin = c.req.valid("json");
+
+        const updateResult = await SecurityService.updateAuthLogin(authLogin);
+
+        if (!updateResult.success) {
+            logger.error({ message: updateResult.message }, "Failed to update auth info");
+            return ErrorResponse(c, { message: updateResult.message });
+        }
+
+        return SuccessResponse(c, { message: "Successfully updated auth information" });
     });

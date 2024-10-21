@@ -1,5 +1,12 @@
-import { attemptAsync, isEmpty, Maybe } from "@banjoanton/utils";
+import { prisma } from "@/db";
+import { AuthLogin } from "@/models/auth-login-model";
+import { createLogger } from "@/utils/logger";
+import { Result } from "@/utils/result";
+import { attemptAsync, isEmpty, Maybe, wrapAsync } from "@banjoanton/utils";
 import { hash } from "bcrypt";
+import { CaddyService } from "./caddy-service";
+
+const logger = createLogger("security-service");
 
 const hashPassword = (password: string) => hash(password, 10);
 
@@ -19,4 +26,35 @@ const hashBasicAuth = async (str: Maybe<string>) =>
         };
     });
 
-export const SecurityService = { hashPassword, hashBasicAuth };
+const updateAuthLogin = async (authLogin: AuthLogin) => {
+    const { username, password } = authLogin;
+    const hashedPassword = await hashPassword(password);
+
+    const [_, error] = await wrapAsync(
+        async () =>
+            await prisma.config.update({
+                // TODO: better way to get the only config
+                where: { id: 1 },
+                data: {
+                    username,
+                    hashedPassword,
+                },
+            })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to update auth info");
+        return Result.error(error.message);
+    }
+
+    const updateResult = await CaddyService.updateBasicAuth(username, hashedPassword);
+
+    if (!updateResult.success) {
+        logger.error({ message: updateResult.message }, "Failed to update auth info");
+        return Result.error(updateResult.message);
+    }
+
+    return Result.ok();
+};
+
+export const SecurityService = { hashPassword, hashBasicAuth, updateAuthLogin };
