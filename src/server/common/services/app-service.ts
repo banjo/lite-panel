@@ -1,6 +1,6 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
-import { isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
+import { exhaustiveCheck, isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
 import { App, AppProxy, AppType } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
@@ -213,7 +213,8 @@ const stop = async (slug: string) => {
         return Result.error(appResult.message);
     }
 
-    switch (appResult.data.type) {
+    const type = appResult.data.type;
+    switch (type) {
         case "DOCKER_COMPOSE": {
             return await ComposeService.stop(slug);
         }
@@ -221,7 +222,7 @@ const stop = async (slug: string) => {
             return Result.error("Not implemented yet");
         }
         default: {
-            return Result.error("Unknown type");
+            exhaustiveCheck(type);
         }
     }
 };
@@ -234,7 +235,8 @@ const start = async (slug: string) => {
         return Result.error(appResult.message);
     }
 
-    switch (appResult.data.type) {
+    const type = appResult.data.type;
+    switch (type) {
         case "DOCKER_COMPOSE": {
             return await ComposeService.start(slug);
         }
@@ -242,7 +244,7 @@ const start = async (slug: string) => {
             return Result.error("Not implemented yet");
         }
         default: {
-            return Result.error("Unknown type");
+            exhaustiveCheck(type);
         }
     }
 };
