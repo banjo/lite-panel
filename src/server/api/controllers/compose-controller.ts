@@ -3,7 +3,8 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { z } from "zod";
 import { ErrorResponse, SuccessResponse } from "../controller-model";
-import { DockerComposeService } from "@/server/common/services/docker-compose-service";
+import { ComposeService } from "@/server/common/services/compose-service";
+import { getBySlugSchema } from "@/models/get-by-slug-schema";
 
 const logger = createLogger("docker-controller");
 
@@ -14,10 +15,6 @@ const createSchema = z.object({
     ports: z.array(z.number()),
 });
 
-const getBySlugSchema = z.object({
-    slug: z.string(),
-});
-
 const updateSchema = createSchema.merge(getBySlugSchema);
 
 export const composeController = new Hono()
@@ -25,7 +22,7 @@ export const composeController = new Hono()
         logger.info("Received request to create a docker compose app");
         const body = c.req.valid("json");
 
-        const createResult = await DockerComposeService.createApp({
+        const createResult = await ComposeService.createApp({
             name: body.name,
             domain: body.domain,
             type: "DOCKER_COMPOSE",
@@ -46,7 +43,7 @@ export const composeController = new Hono()
         logger.info("Received request to restart a docker compose app");
         const body = c.req.valid("json");
 
-        const restartResult = await DockerComposeService.restartApp(body.slug);
+        const restartResult = await ComposeService.restartApp(body.slug);
 
         if (!restartResult.success) {
             logger.error({ message: restartResult.message }, "Failed to restart app");
@@ -59,7 +56,7 @@ export const composeController = new Hono()
         logger.info("Received request to get a docker compose app");
         const { slug } = c.req.valid("query");
 
-        const getResult = await DockerComposeService.getApp(slug);
+        const getResult = await ComposeService.getApp(slug);
 
         if (!getResult.success) {
             logger.error({ message: getResult.message }, "Failed to get app");
@@ -72,7 +69,7 @@ export const composeController = new Hono()
         logger.info("Received request to update a docker compose app");
         const body = c.req.valid("json");
 
-        const updateResult = await DockerComposeService.updateApp(body.slug, {
+        const updateResult = await ComposeService.updateApp(body.slug, {
             name: body.name,
             domain: body.domain,
             meta: {
@@ -92,7 +89,7 @@ export const composeController = new Hono()
         logger.info("Received request to delete a docker compose app");
         const { slug } = c.req.valid("query");
 
-        const deleteResult = await DockerComposeService.deleteApp(slug);
+        const deleteResult = await ComposeService.deleteApp(slug);
 
         if (!deleteResult.success) {
             logger.error({ message: deleteResult.message }, "Failed to delete app");

@@ -1,48 +1,79 @@
 import { createLogger } from "@/utils/logger";
-import { AsyncResultType, attempt, first } from "@banjoanton/utils";
-import { ShellService } from "./shell-service";
 import { Result } from "@/utils/result";
+import { AsyncResultType, isEmpty, last } from "@banjoanton/utils";
+import { ShellService } from "./shell-service";
 
 const logger = createLogger("docker-shell-service");
+
+const handleComposeResponse = (response: string) => {
+    const lines = response.split("\n");
+
+    const warningRegex = /level=(warning)/;
+    const errorWarning = /level=(error|fatal)/;
+    const messages: string[] = [];
+
+    const warnings = lines.filter(line => warningRegex.test(line));
+    if (!isEmpty(warnings)) {
+        messages.push(...warnings);
+    }
+
+    const errors = lines.filter(line => errorWarning.test(line));
+    if (!isEmpty(errors)) {
+        messages.push(...errors);
+    }
+
+    const finalLine = last(lines);
+
+    if (finalLine && !messages.includes(finalLine)) {
+        messages.push(finalLine);
+    }
+
+    return {
+        message: messages.join("\n"),
+        isError: errors.length > 0,
+    };
+};
 
 type DockerShellProps = {
     path: string;
 };
-
-const parseErrorMessage = (message: string) =>
-    attempt(() => message.split("docker-compose.yml:")[1], { fallbackValue: message });
 
 type StartComposeResult = { output?: string };
 const startCompose = async ({ path }: DockerShellProps): AsyncResultType<StartComposeResult> => {
     const result = await ShellService.exec(`docker compose up -d`, { path });
 
     if (!result.success) {
-        const message = parseErrorMessage(result.message.trim());
+        const message = ShellService.parseShellErrorMessage(result.message);
         return Result.error(message);
     }
 
-    const firstLine = first(result.data.response.split("\n"));
-    if (firstLine?.includes("level=warning")) {
-        logger.warn(`Docker compose up warning: ${firstLine}`);
-        return Result.ok({ output: firstLine });
+    const { message, isError } = handleComposeResponse(result.data.response);
+
+    if (isError) {
+        logger.error(`Docker compose up error: ${message}`);
+        return Result.error(message);
     }
 
-    if (firstLine?.includes("level=error")) {
-        logger.error(`Docker compose up error: ${firstLine}`);
-        return Result.error(firstLine);
-    }
-
-    if (firstLine?.includes("level=fatal")) {
-        logger.error(`Docker compose up fatal: ${firstLine}`);
-        return Result.error(firstLine);
-    }
-
-    return Result.ok({ output: undefined });
+    return Result.ok({ output: message });
 };
 
-// TODO: same error handling for stopCompose?
-const stopCompose = async ({ path }: DockerShellProps) =>
-    ShellService.exec(`docker compose down --remove-orphans`, { path });
+const stopCompose = async ({ path }: DockerShellProps) => {
+    const result = await ShellService.exec(`docker compose down --remove-orphans`, { path });
+
+    if (!result.success) {
+        const message = ShellService.parseShellErrorMessage(result.message);
+        return Result.error(message);
+    }
+
+    const { message, isError } = handleComposeResponse(result.data.response);
+
+    if (isError) {
+        logger.error(`Docker compose down error: ${message}`);
+        return Result.error(message);
+    }
+
+    return Result.ok({ output: message });
+};
 
 const restartCompose = async ({ path }: DockerShellProps) => {
     const stopResult = await stopCompose({ path });

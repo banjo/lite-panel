@@ -7,7 +7,7 @@ import { CaddyService } from "./caddy-service";
 import fs from "fs-extra";
 import { wrapAsync } from "@banjoanton/utils";
 
-const logger = createLogger("docker-compose-service");
+const logger = createLogger("compose-service");
 
 type CreateDockerComposeAppProps = CreateAppProps & {
     type: "DOCKER_COMPOSE";
@@ -16,8 +16,7 @@ type CreateDockerComposeAppProps = CreateAppProps & {
 
 const saveComposeFile = async (app: DockerComposeApp) => {
     const [_, error] = await wrapAsync(
-        async () =>
-            await fs.writeFile(`${app.directory}/docker-compose.yml`, app.meta.composeFileContent)
+        async () => await fs.writeFile(`${app.directory}/compose.yml`, app.meta.composeFileContent)
     );
 
     if (error) {
@@ -200,10 +199,52 @@ const deleteApp = async (slug: string) => {
     return Result.ok();
 };
 
-export const DockerComposeService = {
+const stop = async (slug: string) => {
+    const appResult = await getDockerComposeApp(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message, slug }, "Failed to get app to stop");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    const stopResult = await DockerShellService.stopCompose({ path: app.directory });
+
+    if (!stopResult.success) {
+        logger.error({ message: stopResult.message, name: app.name }, "Failed to stop compose");
+        return Result.error(stopResult.message);
+    }
+
+    return Result.ok();
+};
+
+const start = async (slug: string) => {
+    const appResult = await getDockerComposeApp(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message, slug }, "Failed to get app to start");
+        return Result.error(appResult.message);
+    }
+
+    const app = appResult.data;
+
+    const startResult = await DockerShellService.startCompose({ path: app.directory });
+
+    if (!startResult.success) {
+        logger.error({ message: startResult.message, name: app.name }, "Failed to start compose");
+        return Result.error(startResult.message);
+    }
+
+    return Result.ok();
+};
+
+export const ComposeService = {
     createApp,
     restartApp,
     getApp: getDockerComposeApp,
     updateApp,
     deleteApp,
+    stop,
+    start,
 };

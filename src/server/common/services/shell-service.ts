@@ -1,6 +1,6 @@
 import { createLogger } from "@/utils/logger";
 import { Result } from "@/utils/result";
-import { AsyncResultType, isDefined, isEmpty } from "@banjoanton/utils";
+import { AsyncResultType, attempt, isDefined, isEmpty, last } from "@banjoanton/utils";
 import { execa, ExecaError } from "execa";
 
 const logger = createLogger("shell-service");
@@ -45,13 +45,28 @@ const exec = async (command: string, options = defaultExecOptions): ExecReturn =
             "Command failed"
         );
         if (error instanceof ExecaError) {
-            return Result.error(error.message);
+            return Result.error(error.message.trim());
         } else if (error instanceof Error) {
-            return Result.error(error.message);
+            return Result.error(error.message.trim());
         }
 
         return Result.error("Unknown error");
     }
 };
 
-export const ShellService = { exec };
+const parseShellErrorMessage = (message: string) =>
+    attempt(
+        () => {
+            const splitted = message.split("\n");
+            const lastLine = last(splitted);
+
+            if (lastLine) {
+                return lastLine;
+            }
+
+            return message;
+        },
+        { fallbackValue: message }
+    );
+
+export const ShellService = { exec, parseShellErrorMessage };

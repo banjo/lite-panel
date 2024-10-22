@@ -3,6 +3,7 @@ import { JSONValue } from "hono/utils/types";
 
 export type ControllerErrorData = {
     message: string;
+    meta?: Record<string, unknown>;
 };
 
 export const SuccessResponse = <TData extends JSONValue>(c: Context, data: TData) =>

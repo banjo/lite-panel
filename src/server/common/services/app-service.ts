@@ -4,6 +4,8 @@ import { isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
 import { App, AppProxy, AppType } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { DirectoryService } from "./directory-service";
+import { ComposeService } from "./compose-service";
+import { DockerShellService } from "./docker-shell-service";
 
 const logger = createLogger("app-service");
 
@@ -163,6 +165,7 @@ const update = async (app: App) => {
 };
 
 const deleteApp = async (slug: string) => {
+    // TODO: use getByApp
     const [application, error] = await wrapAsync(
         async () =>
             await prisma.application.findUnique({
@@ -202,4 +205,46 @@ const deleteApp = async (slug: string) => {
     return Result.ok();
 };
 
-export const AppService = { create, getAll, getBySlug, update, deleteApp };
+const stop = async (slug: string) => {
+    const appResult = await getBySlug(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Could not load application");
+        return Result.error(appResult.message);
+    }
+
+    switch (appResult.data.type) {
+        case "DOCKER_COMPOSE": {
+            return await ComposeService.stop(slug);
+        }
+        case "DOCKERFILE": {
+            return Result.error("Not implemented yet");
+        }
+        default: {
+            return Result.error("Unknown type");
+        }
+    }
+};
+
+const start = async (slug: string) => {
+    const appResult = await getBySlug(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Could not load application");
+        return Result.error(appResult.message);
+    }
+
+    switch (appResult.data.type) {
+        case "DOCKER_COMPOSE": {
+            return await ComposeService.start(slug);
+        }
+        case "DOCKERFILE": {
+            return Result.error("Not implemented yet");
+        }
+        default: {
+            return Result.error("Unknown type");
+        }
+    }
+};
+
+export const AppService = { create, getAll, getBySlug, update, deleteApp, stop, start };
