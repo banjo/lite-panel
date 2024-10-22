@@ -6,8 +6,12 @@ export type ControllerErrorData = {
     meta?: Record<string, unknown>;
 };
 
-export const SuccessResponse = <TData extends JSONValue>(c: Context, data: TData) =>
-    c.json(data, 200);
+export function SuccessResponse(c: Context): void;
+export function SuccessResponse<TData extends JSONValue>(c: Context, data: TData): void;
+export function SuccessResponse<TData extends JSONValue>(c: Context, data?: TData): void {
+    c.json(data ?? { success: true }, 200);
+}
+
 export const ErrorResponse = (c: Context, data: ControllerErrorData) => c.json(data, 500);
 export const NotFoundResponse = (c: Context, data: ControllerErrorData) => c.json(data, 404);
 export const UnauthorizedResponse = (c: Context, data: ControllerErrorData) => c.json(data, 401);

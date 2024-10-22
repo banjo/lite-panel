@@ -96,5 +96,5 @@ export const composeController = new Hono()
             return ErrorResponse(c, { message: deleteResult.message });
         }
 
-        return SuccessResponse(c, { success: true });
+        return SuccessResponse(c);
     });

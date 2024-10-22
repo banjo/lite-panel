@@ -31,7 +31,7 @@ export const appsController = new Hono()
             return ErrorResponse(c, { message: stopResult.message });
         }
 
-        return SuccessResponse(c, { success: true });
+        return SuccessResponse(c);
     })
     .post("/start", zValidator("json", getBySlugSchema), async c => {
         const { slug } = c.req.valid("json");
@@ -44,5 +44,5 @@ export const appsController = new Hono()
             return ErrorResponse(c, { message: startResult.message });
         }
 
-        return SuccessResponse(c, { success: true });
+        return SuccessResponse(c);
     });
