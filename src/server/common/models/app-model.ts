@@ -1,4 +1,4 @@
-import { attempt, includes, merge, produce } from "@banjoanton/utils";
+import { attempt, includes, merge } from "@banjoanton/utils";
 import { ApplicationWithReverseProxy } from "prisma/model";
 import { DirectoryService } from "../services/directory-service";
 
@@ -29,6 +29,8 @@ type BaseApp = {
     directory: string;
     domain: string;
     proxies: AppProxy[];
+    type: AppType;
+    isRunning: boolean;
 };
 
 export type DockerComposeApp = BaseApp & {
@@ -53,19 +55,22 @@ const fromDb = (application: ApplicationWithReverseProxy): App => {
 
     const meta = attempt(() => JSON.parse(application?.meta ?? "{}"));
 
-    return {
+    const app = from({
         name: application.name,
         slug: application.slug,
         domain: application.domain,
         type: application.type,
         directory,
         meta,
+        isRunning: application.isRunning,
         proxies: application.reverseProxies?.map(proxy => ({
             description: proxy.description ?? undefined,
             port: proxy.port,
             subPath: proxy.subPath ?? undefined,
         })),
-    };
+    });
+
+    return app;
 };
 
 const update = (app: App, props: Partial<App>): App => merge(app, props);

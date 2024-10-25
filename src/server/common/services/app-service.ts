@@ -1,11 +1,10 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
-import { exhaustiveCheck, isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
+import { attemptAsync, exhaustiveCheck, isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
 import { App, AppProxy, AppType } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
-import { DirectoryService } from "./directory-service";
 import { ComposeService } from "./compose-service";
-import { DockerShellService } from "./docker-shell-service";
+import { DirectoryService } from "./directory-service";
 
 const logger = createLogger("app-service");
 
@@ -49,6 +48,7 @@ const create = async ({ name, proxies, domain, type, meta }: CreateAppProps) => 
                 slug,
                 domain,
                 type,
+                isRunning: true,
                 meta: JSON.stringify(meta),
                 reverseProxies: {
                     createMany: {
@@ -165,27 +165,17 @@ const update = async (app: App) => {
 };
 
 const deleteApp = async (slug: string) => {
-    // TODO: use getByApp
-    const [application, error] = await wrapAsync(
-        async () =>
-            await prisma.application.findUnique({
-                where: { slug },
-                include: { reverseProxies: true },
-            })
-    );
+    const applicationResult = await getBySlug(slug);
 
-    if (error) {
-        logger.error({ error }, "Failed to get application from database");
-        return Result.error(error.message);
+    if (!applicationResult.success) {
+        logger.error(
+            { message: applicationResult.message },
+            "Failed to get application from database"
+        );
+        return Result.error(applicationResult.message);
     }
 
-    if (!application) {
-        logger.error({ slug }, "Application not found");
-        return Result.error("Application not found");
-    }
-
-    const app = App.fromDb(application);
-
+    const app = applicationResult.data;
     const deleteResult = await DirectoryService.removeAppDirectory(app.slug);
 
     if (!deleteResult.success) {
@@ -214,17 +204,45 @@ const stop = async (slug: string) => {
     }
 
     const type = appResult.data.type;
-    switch (type) {
-        case "DOCKER_COMPOSE": {
-            return await ComposeService.stop(slug);
-        }
-        case "DOCKERFILE": {
-            return Result.error("Not implemented yet");
-        }
-        default: {
-            exhaustiveCheck(type);
-        }
+    const result = await attemptAsync(
+        async () => {
+            switch (type) {
+                case "DOCKER_COMPOSE": {
+                    return await ComposeService.stop(slug);
+                }
+                case "DOCKERFILE": {
+                    return Result.error("Not implemented yet");
+                }
+                default: {
+                    exhaustiveCheck(type);
+                }
+            }
+        },
+        { fallbackValue: Result.error("Something went wrong") }
+    );
+
+    if (!result.success) {
+        logger.error({ message: result.message }, "Could not stop compose application");
+        return Result.error(result.message);
     }
+
+    const [_, updateError] = await wrapAsync(async () => {
+        return prisma.application.update({
+            where: {
+                slug,
+            },
+            data: {
+                isRunning: false,
+            },
+        });
+    });
+
+    if (updateError) {
+        logger.error({ error: updateError, slug }, "Could not update application running state");
+        return Result.error(updateError.message);
+    }
+
+    return Result.ok();
 };
 
 const start = async (slug: string) => {
@@ -236,17 +254,59 @@ const start = async (slug: string) => {
     }
 
     const type = appResult.data.type;
-    switch (type) {
-        case "DOCKER_COMPOSE": {
-            return await ComposeService.start(slug);
+
+    const result = await attemptAsync(
+        async () => {
+            switch (type) {
+                case "DOCKER_COMPOSE": {
+                    return await ComposeService.start(slug);
+                }
+                case "DOCKERFILE": {
+                    return Result.error("Not implemented yet");
+                }
+                default: {
+                    exhaustiveCheck(type);
+                }
+            }
+        },
+        {
+            fallbackValue: Result.error("Something went wrong"),
         }
-        case "DOCKERFILE": {
-            return Result.error("Not implemented yet");
-        }
-        default: {
-            exhaustiveCheck(type);
-        }
+    );
+
+    if (!result.success) {
+        logger.error({ message: result.message }, "Could not start compose application");
+        return Result.error(result.message);
     }
+
+    const [_, updateError] = await wrapAsync(async () => {
+        return prisma.application.update({
+            where: {
+                slug,
+            },
+            data: {
+                isRunning: true,
+            },
+        });
+    });
+
+    if (updateError) {
+        logger.error({ error: updateError, slug }, "Could not update application running state");
+        return Result.error(updateError.message);
+    }
+
+    return Result.ok();
 };
 
-export const AppService = { create, getAll, getBySlug, update, deleteApp, stop, start };
+const isRunning = async (slug: string) => {
+    const appResult = await getBySlug(slug);
+
+    if (!appResult.success) {
+        logger.error({ message: appResult.message }, "Could not load application");
+        return Result.error(appResult.message);
+    }
+
+    return Result.ok(appResult.data.isRunning);
+};
+
+export const AppService = { create, getAll, getBySlug, update, deleteApp, stop, start, isRunning };

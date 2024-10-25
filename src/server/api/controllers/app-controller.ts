@@ -31,7 +31,7 @@ export const appsController = new Hono()
             return ErrorResponse(c, { message: stopResult.message });
         }
 
-        return SuccessResponse(c);
+        return SuccessResponse(c, { success: true });
     })
     .post("/start", zValidator("json", getBySlugSchema), async c => {
         const { slug } = c.req.valid("json");
@@ -44,5 +44,18 @@ export const appsController = new Hono()
             return ErrorResponse(c, { message: startResult.message });
         }
 
-        return SuccessResponse(c);
+        return SuccessResponse(c, { success: true });
+    })
+    .get("/isRunning/:slug", zValidator("query", getBySlugSchema), async c => {
+        const { slug } = c.req.valid("query");
+        logger.info({ slug }, "Received request to get app status");
+
+        const statusResult = await AppService.isRunning(slug);
+
+        if (!statusResult.success) {
+            logger.error({ message: statusResult.message, slug }, "Failed to get app status");
+            return ErrorResponse(c, { message: statusResult.message });
+        }
+
+        return SuccessResponse(c, { isRunning: statusResult.data });
     });

@@ -13,21 +13,22 @@ datasource db {
 // Server configuration for the VPS.
 model Config {
   id             Int     @id @default(autoincrement())
-  port           Int 
-  domain         String 
-  serviceName    String 
-  username       String? 
-  hashedPassword String? 
+  port           Int
+  domain         String
+  serviceName    String
+  username       String?
+  hashedPassword String?
 }
 
 // A application in Caddy. Often a docker compose file or a project. Can have multiple domains.
 model Application {
-  id             Int             @id @default(autoincrement())
+  id             Int            @id @default(autoincrement())
   name           String
-  slug           String          @unique
+  slug           String         @unique
+  isRunning      Boolean        @default(true)
   domain         String
-  type           String          // DOCKER_COMPOSE (ENUM NOT SUPPORTED FOR SQLITE)
-  meta           String?         // Stringified JSON, as meta might be different for different types
+  type           String // DOCKER_COMPOSE (ENUM NOT SUPPORTED FOR SQLITE)
+  meta           String? // Stringified JSON, as meta might be different for different types
   reverseProxies ReverseProxy[]
 }
 
