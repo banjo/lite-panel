@@ -181,6 +181,22 @@ const updateBasicAuth = async (username: string, hashedPassword: string) => {
     return await updateServerConfig(updatedServerConfig);
 };
 
+const removeBasicAuth = async () => {
+    const serverConfigResult = await ConfigService.getCurrentServerConfig();
+
+    if (!serverConfigResult.success) {
+        logger.error("Could not parse server config");
+        return Result.error("Could not parse server config");
+    }
+
+    const updatedServerConfig: ServerConfig = {
+        ...serverConfigResult.data,
+        username: undefined,
+        hashedPassword: undefined,
+    };
+    return await updateServerConfig(updatedServerConfig);
+};
+
 // APP CONFIGS
 const readAppConfig = async (app: App) => {
     const caddyPath = path.join(app.directory, "Caddyfile");
@@ -233,4 +249,5 @@ export const CaddyService = {
     readServerConfig,
     updateServerConfig,
     updateBasicAuth,
+    removeBasicAuth,
 };

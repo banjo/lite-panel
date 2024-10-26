@@ -4,8 +4,9 @@ import { Hono } from "hono";
 import { ErrorResponse, SuccessResponse } from "../controller-model";
 import { ConfigService } from "@/server/common/services/config-service";
 import { zValidator } from "@hono/zod-validator";
-import { AuthLoginSchema } from "@/models/auth-login-model";
+import { AuthLoginSchema } from "@/models/auth-login-schema";
 import { SecurityService } from "@/server/common/services/security-service";
+import { ActivateSchema } from "@/models/activation-schema";
 
 const logger = createLogger("server-controller");
 
@@ -52,4 +53,16 @@ export const serverController = new Hono()
         }
 
         return SuccessResponse(c, { message: "Successfully updated auth information" });
+    })
+    .post("/auth/deactivate", async c => {
+        logger.info("Received request to update basic auth status");
+
+        const updateResult = await SecurityService.deactivateAuth();
+
+        if (!updateResult.success) {
+            logger.error({ message: updateResult.message }, "Failed to deactivate auth");
+            return ErrorResponse(c, { message: updateResult.message });
+        }
+
+        return SuccessResponse(c, { message: "Succesfully deactivated auth" });
     });

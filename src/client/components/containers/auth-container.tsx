@@ -1,6 +1,6 @@
 import { client } from "@/client/client";
-import { authInfoQueryOptions } from "@/client/queries/auth-info-query";
-import { AuthLogin, AuthLoginSchema } from "@/models/auth-login-model";
+import { authInfoQueryKey, authInfoQueryOptions } from "@/client/queries/auth-info-query";
+import { AuthLogin, AuthLoginSchema } from "@/models/auth-login-schema";
 import { cn } from "@/utils/utils";
 import { Maybe, wrapAsync } from "@banjoanton/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import toast from "react-hot-toast";
+import { queryClient } from "@/client/common/providers/query-provider";
 
 type DialogContentContainerProps = {
     authInfo: {
@@ -50,6 +51,8 @@ const DialogContentContainer = ({ authInfo, setOpen }: DialogContentContainerPro
             toast.error(error.message);
             return;
         }
+
+        queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
 
         setOpen(false);
         form.reset();
@@ -127,8 +130,19 @@ export const AuthContainer = () => {
             </Wrapper>
         );
 
-    // TODO: remove
-    authInfo.isActive = true;
+    const deactivateAuth = async () => {
+        const [_, error] = await wrapAsync(async () => {
+            return await client.api.server.auth.deactivate.$post();
+        });
+
+        if (error) {
+            toast.error(error.message);
+            return;
+        }
+
+        queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
+        toast.success("Successfully deactivated auth");
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -166,7 +180,7 @@ export const AuthContainer = () => {
                         ) : null}
 
                         {authInfo.isActive ? (
-                            <Button variant="outline" className="flex-1">
+                            <Button variant="outline" className="flex-1" onClick={deactivateAuth}>
                                 <ShieldMinus className="mr-2 h-4 w-4" />
                                 Deactivate
                             </Button>

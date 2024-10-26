@@ -1,10 +1,11 @@
 import { prisma } from "@/db";
-import { AuthLogin } from "@/models/auth-login-model";
+import { AuthLogin } from "@/models/auth-login-schema";
 import { createLogger } from "@/utils/logger";
 import { Result } from "@/utils/result";
 import { attemptAsync, isEmpty, Maybe, wrapAsync } from "@banjoanton/utils";
 import { hash } from "bcrypt";
 import { CaddyService } from "./caddy-service";
+import { ConfigService } from "./config-service";
 
 const logger = createLogger("security-service");
 
@@ -57,4 +58,47 @@ const updateAuthLogin = async (authLogin: AuthLogin) => {
     return Result.ok();
 };
 
-export const SecurityService = { hashPassword, hashBasicAuth, updateAuthLogin };
+const deactivateAuth = async () => {
+    const configResult = await ConfigService.getCurrentServerConfig();
+
+    if (!configResult.success) {
+        logger.error("Could not parse server config");
+        return Result.error("Could not parse server config");
+    }
+
+    if (!configResult.data.username && !configResult.data.hashedPassword) {
+        logger.info("No basic auth to deactivate");
+        return Result.ok();
+    }
+
+    const [_, error] = await wrapAsync(
+        async () =>
+            await prisma.$transaction(async tx => {
+                await tx.config.update({
+                    where: { id: 1 },
+                    data: {
+                        username: null,
+                        hashedPassword: null,
+                    },
+                });
+
+                const updateResult = await CaddyService.removeBasicAuth();
+
+                if (!updateResult.success) {
+                    logger.error({ message: updateResult.message }, "Failed to update auth info");
+                    throw new Error(updateResult.message);
+                }
+
+                return Result.ok();
+            })
+    );
+
+    if (error) {
+        logger.error({ error }, "Failed to deactivate auth");
+        return Result.error(error.message);
+    }
+
+    return Result.ok();
+};
+
+export const SecurityService = { hashPassword, hashBasicAuth, updateAuthLogin, deactivateAuth };

@@ -48,7 +48,11 @@ export const AppsOverviewListContainer = () => {
                             <p className="font-medium">{app.name}</p>
                             <p className="text-sm text-muted-foreground">{translate(app.type)}</p>
                         </div>
-                        <Badge variant="default">Running</Badge>
+                        {app.isRunning ? (
+                            <Badge variant="default">Running</Badge>
+                        ) : (
+                            <Badge variant="outline">Paused</Badge>
+                        )}
                     </li>
                 ))}
             </ul>
