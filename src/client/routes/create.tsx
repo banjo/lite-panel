@@ -24,6 +24,63 @@ const Wrapper = ({ children, title, description }: CardContainerProps) => (
     </CardContainer>
 );
 
+type BaseAppFormProps<T> = {
+    form: T;
+};
+const BaseAppForm = <T extends ReturnType<typeof useForm<any>>>({ form }: BaseAppFormProps<T>) => {
+    return (
+        <>
+            <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                            <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        <FormDescription>The name of the application</FormDescription>
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="domain"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Domain</FormLabel>
+                        <FormControl>
+                            <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        <FormDescription>No HTTPS (e.g. example.com)</FormDescription>
+                    </FormItem>
+                )}
+            />
+
+            <FormField
+                control={form.control}
+                name="port"
+                render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Port</FormLabel>
+                        <FormControl>
+                            <Input type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                        <FormDescription>
+                            Which port the application should use locally and connect to the SSL
+                            certificate
+                        </FormDescription>
+                    </FormItem>
+                )}
+            />
+        </>
+    );
+};
+
 const CreateComposeContainer = () => {
     const form = useForm<CreateComposeApp>({
         resolver: zodResolver(CreateComposeAppSchema),
@@ -45,53 +102,7 @@ const CreateComposeContainer = () => {
                     description="An application created by with Docker Compose."
                 >
                     <div className="space-y-4">
-                        <FormField
-                            control={form.control}
-                            name="name"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Name</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    <FormDescription>The name of the application</FormDescription>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="domain"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Domain</FormLabel>
-                                    <FormControl>
-                                        <Input {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    <FormDescription>No HTTPS (e.g. example.com)</FormDescription>
-                                </FormItem>
-                            )}
-                        />
-
-                        <FormField
-                            control={form.control}
-                            name="port"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Port</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" {...field} />
-                                    </FormControl>
-                                    <FormMessage />
-                                    <FormDescription>
-                                        Which port the application should use locally and connect to
-                                        the SSL certificate
-                                    </FormDescription>
-                                </FormItem>
-                            )}
-                        />
+                        <BaseAppForm form={form} />
 
                         <FormField
                             control={form.control}
