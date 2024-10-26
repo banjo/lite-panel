@@ -1,12 +1,13 @@
 import { PropsWithChildren } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 
-type CardContainerProps = PropsWithChildren<{ title: string }>;
-export const CardContainer = ({ children, title }: CardContainerProps) => {
+export type CardContainerProps = PropsWithChildren<{ title: string; description?: string }>;
+export const CardContainer = ({ children, title, description }: CardContainerProps) => {
     return (
         <Card>
             <CardHeader>
                 <CardTitle>{title}</CardTitle>
+                {description ? <CardDescription>{description}</CardDescription> : null}
             </CardHeader>
 
             <CardContent>{children}</CardContent>

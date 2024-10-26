@@ -1,10 +1,11 @@
 import { prisma } from "@/db";
 import { createLogger } from "@/utils/logger";
 import { attemptAsync, exhaustiveCheck, isEmpty, Result, uuid, wrapAsync } from "@banjoanton/utils";
-import { App, AppProxy, AppType } from "../models/app-model";
+import { App, AppProxy } from "../models/app-model";
 import { CaddyService } from "./caddy-service";
 import { ComposeService } from "./compose-service";
 import { DirectoryService } from "./directory-service";
+import { AppType } from "@/models/app-types-model";
 
 const logger = createLogger("app-service");
 

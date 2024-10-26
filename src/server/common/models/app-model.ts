@@ -1,9 +1,7 @@
 import { attempt, includes, merge } from "@banjoanton/utils";
 import { ApplicationWithReverseProxy } from "prisma/model";
 import { DirectoryService } from "../services/directory-service";
-
-export const APP_TYPES = ["DOCKER_COMPOSE", "DOCKERFILE"] as const;
-export type AppType = (typeof APP_TYPES)[number];
+import { APP_TYPES, AppType } from "@/models/app-types-model";
 
 export type DockerComposeMeta = {
     composeFileContent: string;

@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { AppsOverviewListContainer } from "../components/containers/apps-overview-list-container";
 import { AuthContainer } from "../components/containers/auth-container";
@@ -13,8 +13,10 @@ const Index = () => {
         <div className="container mx-auto p-4">
             <header className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">VPS Dashboard</h1>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Create App
+                <Button asChild>
+                    <Link to="/create">
+                        <Plus className="mr-2 h-4 w-4" /> Create
+                    </Link>
                 </Button>
             </header>
             <div className="grid gap-6">

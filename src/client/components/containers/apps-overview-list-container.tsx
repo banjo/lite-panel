@@ -1,10 +1,10 @@
 import { allAppsQueryOptions } from "@/client/queries/app-overview-query";
-import { AppType } from "@/server/common/models/app-model";
 import { PropsWithChildren } from "react";
 import { CardContainer } from "../shared/card-container";
 import { MutedInfo } from "../shared/muted-info";
 import { Badge } from "../ui/badge";
 import { useQuery } from "@tanstack/react-query";
+import { AppType } from "@/models/app-types-model";
 
 const appTypeTranslations: Record<AppType, string> = {
     DOCKER_COMPOSE: "Docker Compose",
