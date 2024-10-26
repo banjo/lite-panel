@@ -14,16 +14,14 @@ declare module "@tanstack/react-router" {
     }
 }
 
-const App = () => {
-    return (
-        <QueryProvider>
-            <SidebarProvider>
-                <Toaster position="bottom-right" />
-                <RouterProvider router={router} />
-            </SidebarProvider>
-        </QueryProvider>
-    );
-};
+const App = () => (
+    <QueryProvider>
+        <SidebarProvider>
+            <Toaster position="bottom-right" />
+            <RouterProvider router={router} />
+        </SidebarProvider>
+    </QueryProvider>
+);
 
 const root = createRoot(document.getElementById("root")!);
 root.render(<App />);

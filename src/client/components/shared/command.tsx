@@ -36,29 +36,27 @@ export const Command: FC<CommandProps> = ({
     handleInputChange,
     handleSelected,
     headingText,
-}) => {
-    return (
-        <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
-            <CommandInput placeholder={inputText} onValueChange={handleInputChange} />
+}) => (
+    <CommandDialog open={isOpen} onOpenChange={setIsOpen}>
+        <CommandInput placeholder={inputText} onValueChange={handleInputChange} />
 
-            <CommandList>
-                {results.length === 0 && <CommandEmpty>{notFoundText}</CommandEmpty>}
-                {results.length > 0 && (
-                    <CommandGroup heading={headingText}>
-                        {results.map(result => (
-                            <CommandItem
-                                key={result.text}
-                                onSelect={() => {
-                                    handleSelected(result);
-                                }}
-                            >
-                                {result.icon}
-                                <span>{result.text}</span>
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
-                )}
-            </CommandList>
-        </CommandDialog>
-    );
-};
+        <CommandList>
+            {results.length === 0 && <CommandEmpty>{notFoundText}</CommandEmpty>}
+            {results.length > 0 && (
+                <CommandGroup heading={headingText}>
+                    {results.map(result => (
+                        <CommandItem
+                            key={result.text}
+                            onSelect={() => {
+                                handleSelected(result);
+                            }}
+                        >
+                            {result.icon}
+                            <span>{result.text}</span>
+                        </CommandItem>
+                    ))}
+                </CommandGroup>
+            )}
+        </CommandList>
+    </CommandDialog>
+);

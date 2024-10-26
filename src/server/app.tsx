@@ -22,8 +22,8 @@ app.use(
 );
 
 if (isProduction) {
-    app.get("*", c => {
-        return c.html(
+    app.get("*", c =>
+        c.html(
             renderToString(
                 <html>
                     <head>
@@ -38,8 +38,8 @@ if (isProduction) {
                     </body>
                 </html>
             )
-        );
-    });
+        )
+    );
 }
 
 export type AppType = typeof app;

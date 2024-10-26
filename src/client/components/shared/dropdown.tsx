@@ -42,36 +42,34 @@ export const Dropdown = <T,>({
     item,
     buttonClasses,
     containerClasses,
-}: Props<T>) => {
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger className={buttonClasses}>{children}</DropdownMenuTrigger>
-            <DropdownMenuContent side={side} align={align} className={cn("w-32", containerClasses)}>
-                {menuEntries.map((entry, index) => {
-                    switch (entry.type) {
-                        case "select": {
-                            return (
-                                <DropdownMenuItem
-                                    key={index}
-                                    onSelect={() => entry.onSelect(item)}
-                                    disabled={entry.disabled}
-                                >
-                                    {entry.content instanceof Function
-                                        ? entry.content(item)
-                                        : entry.content}
-                                </DropdownMenuItem>
-                            );
-                        }
-                        case "label": {
-                            return <DropdownMenuLabel key={index}>{entry.label}</DropdownMenuLabel>;
-                        }
-                        case "separator": {
-                            return <DropdownMenuSeparator key={index} />;
-                        }
-                        // No default
+}: Props<T>) => (
+    <DropdownMenu>
+        <DropdownMenuTrigger className={buttonClasses}>{children}</DropdownMenuTrigger>
+        <DropdownMenuContent side={side} align={align} className={cn("w-32", containerClasses)}>
+            {menuEntries.map((entry, index) => {
+                switch (entry.type) {
+                    case "select": {
+                        return (
+                            <DropdownMenuItem
+                                key={index}
+                                onSelect={() => entry.onSelect(item)}
+                                disabled={entry.disabled}
+                            >
+                                {entry.content instanceof Function
+                                    ? entry.content(item)
+                                    : entry.content}
+                            </DropdownMenuItem>
+                        );
                     }
-                })}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    );
-};
+                    case "label": {
+                        return <DropdownMenuLabel key={index}>{entry.label}</DropdownMenuLabel>;
+                    }
+                    case "separator": {
+                        return <DropdownMenuSeparator key={index} />;
+                    }
+                    // No default
+                }
+            })}
+        </DropdownMenuContent>
+    </DropdownMenu>
+);

@@ -11,14 +11,12 @@ type Props = {
     animate?: HTMLMotionProps<"div">;
 } & BadgeProps;
 
-export const Badge: FC<Props> = ({ children, tooltip, show, animate, ...props }) => {
-    return (
-        <Animated show={show} {...animate}>
-            <Tooltip tooltip={tooltip}>
-                <div>
-                    <UiBadge {...props}>{children}</UiBadge>
-                </div>
-            </Tooltip>
-        </Animated>
-    );
-};
+export const Badge: FC<Props> = ({ children, tooltip, show, animate, ...props }) => (
+    <Animated show={show} {...animate}>
+        <Tooltip tooltip={tooltip}>
+            <div>
+                <UiBadge {...props}>{children}</UiBadge>
+            </div>
+        </Tooltip>
+    </Animated>
+);

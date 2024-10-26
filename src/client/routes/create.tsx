@@ -1,9 +1,10 @@
 import { CreateComposeApp, CreateComposeAppSchema } from "@/models/create-compose-schema";
+import { CreateDockerfileApp, CreateDockerfileAppSchema } from "@/models/create-dockerfile-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
-import { PropsWithChildren } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { CardContainer, CardContainerProps } from "../components/shared/card-container";
+import { Button } from "../components/ui/button";
 import {
     Form,
     FormControl,
@@ -15,9 +16,7 @@ import {
 } from "../components/ui/form";
 import { Input } from "../components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
-import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
-import { CreateDockerfileApp, CreateDockerfileAppSchema } from "@/models/create-dockerfile-schema";
 
 const Wrapper = ({ children, title, description }: CardContainerProps) => (
     <CardContainer title={title} description={description}>

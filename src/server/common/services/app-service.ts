@@ -21,15 +21,16 @@ const create = async ({ name, proxies, domain, type, meta }: CreateAppProps) => 
     const slug = uuid();
 
     const ports = proxies.map(proxy => proxy.port);
-    const [proxiesWithSamePort, portError] = await wrapAsync(async () => {
-        return await prisma.reverseProxy.findMany({
-            where: {
-                port: {
-                    in: ports,
+    const [proxiesWithSamePort, portError] = await wrapAsync(
+        async () =>
+            await prisma.reverseProxy.findMany({
+                where: {
+                    port: {
+                        in: ports,
+                    },
                 },
-            },
-        });
-    });
+            })
+    );
 
     if (portError) {
         logger.error({ message: portError.message }, "Failed to look for proxies with same port");
@@ -42,30 +43,31 @@ const create = async ({ name, proxies, domain, type, meta }: CreateAppProps) => 
         return Result.error(`Port is already in use: ${portsInUse.join(", ")}`);
     }
 
-    const [application, createError] = await wrapAsync(async () => {
-        return await prisma.application.create({
-            data: {
-                name,
-                slug,
-                domain,
-                type,
-                isRunning: true,
-                meta: JSON.stringify(meta),
-                reverseProxies: {
-                    createMany: {
-                        data: proxies.map(proxy => ({
-                            port: proxy.port,
-                            description: proxy.description,
-                            subPath: proxy.subPath,
-                        })),
+    const [application, createError] = await wrapAsync(
+        async () =>
+            await prisma.application.create({
+                data: {
+                    name,
+                    slug,
+                    domain,
+                    type,
+                    isRunning: true,
+                    meta: JSON.stringify(meta),
+                    reverseProxies: {
+                        createMany: {
+                            data: proxies.map(proxy => ({
+                                port: proxy.port,
+                                description: proxy.description,
+                                subPath: proxy.subPath,
+                            })),
+                        },
                     },
                 },
-            },
-            include: {
-                reverseProxies: true,
-            },
-        });
-    });
+                include: {
+                    reverseProxies: true,
+                },
+            })
+    );
 
     if (createError) {
         logger.error({ message: createError.message }, "Failed to create application");
@@ -227,16 +229,16 @@ const stop = async (slug: string) => {
         return Result.error(result.message);
     }
 
-    const [_, updateError] = await wrapAsync(async () => {
-        return prisma.application.update({
+    const [_, updateError] = await wrapAsync(async () =>
+        prisma.application.update({
             where: {
                 slug,
             },
             data: {
                 isRunning: false,
             },
-        });
-    });
+        })
+    );
 
     if (updateError) {
         logger.error({ error: updateError, slug }, "Could not update application running state");
@@ -280,16 +282,16 @@ const start = async (slug: string) => {
         return Result.error(result.message);
     }
 
-    const [_, updateError] = await wrapAsync(async () => {
-        return prisma.application.update({
+    const [_, updateError] = await wrapAsync(async () =>
+        prisma.application.update({
             where: {
                 slug,
             },
             data: {
                 isRunning: true,
             },
-        });
-    });
+        })
+    );
 
     if (updateError) {
         logger.error({ error: updateError, slug }, "Could not update application running state");

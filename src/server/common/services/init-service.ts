@@ -43,17 +43,18 @@ const initConfig = async () => {
         return Result.error("No server config found");
     }
 
-    const [_, createError] = await wrapAsync(async () => {
-        return await prisma.config.create({
-            data: {
-                port: serverConfig.port,
-                domain: serverConfig.domain,
-                username: serverConfig.username,
-                hashedPassword: serverConfig.hashedPassword,
-                serviceName: serverConfig.serviceName,
-            },
-        });
-    });
+    const [_, createError] = await wrapAsync(
+        async () =>
+            await prisma.config.create({
+                data: {
+                    port: serverConfig.port,
+                    domain: serverConfig.domain,
+                    username: serverConfig.username,
+                    hashedPassword: serverConfig.hashedPassword,
+                    serviceName: serverConfig.serviceName,
+                },
+            })
+    );
 
     if (createError) {
         logger.error({ createError }, "Failed to create config");

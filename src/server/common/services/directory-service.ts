@@ -46,9 +46,7 @@ const createAppDirectory = async (app: App) => {
         return Result.ok(appPath);
     }
 
-    const [_, error] = await wrapAsync(async () => {
-        return await fs.mkdir(appPath, { recursive: true });
-    });
+    const [_, error] = await wrapAsync(async () => await fs.mkdir(appPath, { recursive: true }));
 
     if (error) {
         logger.error({ error, appName: app }, "Failed to create app directory");
@@ -66,9 +64,7 @@ const removeAppDirectory = async (slug: string) => {
         return Result.ok();
     }
 
-    const [_, error] = await wrapAsync(async () => {
-        return await fs.remove(appPath);
-    });
+    const [_, error] = await wrapAsync(async () => await fs.remove(appPath));
 
     if (error) {
         logger.error({ error, slug }, "Failed to remove app directory");

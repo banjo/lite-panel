@@ -10,7 +10,5 @@ export class ApiError extends Error {
         Error.captureStackTrace(this, this.constructor);
     }
 
-    static isApiError = (error: Error): error is ApiError => {
-        return error instanceof ApiError;
-    };
+    static isApiError = (error: Error): error is ApiError => error instanceof ApiError;
 }

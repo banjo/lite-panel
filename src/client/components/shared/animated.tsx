@@ -19,21 +19,17 @@ export const Animated: FC<Props> = ({
     animate: animateProps,
     exit: exitProps,
     ...props
-}) => {
-    return (
-        <>
-            <AnimatePresence>
-                {show && (
-                    <motion.div
-                        initial={initialProps ?? defaults.initial}
-                        animate={animateProps ?? defaults.animate}
-                        exit={exitProps ?? defaults.exit}
-                        {...props}
-                    >
-                        {children}
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </>
-    );
-};
+}) => (
+    <AnimatePresence>
+        {show ? (
+            <motion.div
+                initial={initialProps ?? defaults.initial}
+                animate={animateProps ?? defaults.animate}
+                exit={exitProps ?? defaults.exit}
+                {...props}
+            >
+                {children}
+            </motion.div>
+        ) : null}
+    </AnimatePresence>
+);

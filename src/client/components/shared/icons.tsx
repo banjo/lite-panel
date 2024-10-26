@@ -20,6 +20,7 @@ import {
     ListChecks,
     StretchHorizontal as ListLayout,
     LogOut,
+    type LucideProps,
     Moon,
     MoreHorizontal,
     PlusCircle,
@@ -28,7 +29,6 @@ import {
     Star,
     SunMedium,
     Twitter,
-    type LucideProps,
 } from "lucide-react";
 import { FC } from "react";
 
