@@ -1,5 +1,5 @@
 import { systemInformationQueryOptions } from "@/client/queries/system-information-query";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Cpu, HardDrive, MemoryStick, Server, Wifi } from "lucide-react";
 import { PropsWithChildren } from "react";
 import { CardContainer } from "../shared/card-container";
@@ -10,8 +10,8 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 );
 
 export const ServerInformationContainer = () => {
-    const { data: serverInfo, isLoading, error } = useSuspenseQuery(systemInformationQueryOptions);
-    if (isLoading) {
+    const { data: serverInfo, isPending, error } = useQuery(systemInformationQueryOptions);
+    if (isPending) {
         return (
             <Wrapper>
                 <MutedInfo text="Loading..." />

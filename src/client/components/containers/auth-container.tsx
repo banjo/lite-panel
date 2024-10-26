@@ -1,13 +1,16 @@
 import { client } from "@/client/client";
+import { queryClient } from "@/client/common/providers/query-provider";
+import { FetchService } from "@/client/common/services/fetch-service";
 import { authInfoQueryKey, authInfoQueryOptions } from "@/client/queries/auth-info-query";
 import { AuthLogin, AuthLoginSchema } from "@/models/auth-login-schema";
 import { cn } from "@/utils/utils";
-import { Maybe, wrapAsync } from "@banjoanton/utils";
+import { Maybe } from "@banjoanton/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Frown, LockIcon, ShieldMinus, ShieldPlus, Smile } from "lucide-react";
 import { PropsWithChildren, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { CardContainer } from "../shared/card-container";
 import { MutedInfo } from "../shared/muted-info";
 import { Button } from "../ui/button";
@@ -22,9 +25,6 @@ import {
 } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
-import toast from "react-hot-toast";
-import { queryClient } from "@/client/common/providers/query-provider";
-import { FetchService } from "@/client/common/services/fetch-service";
 
 type DialogContentContainerProps = {
     authInfo: {
@@ -112,7 +112,7 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 );
 
 export const AuthContainer = () => {
-    const { data: authInfo, error, isLoading } = useSuspenseQuery(authInfoQueryOptions);
+    const { data: authInfo, error, isPending } = useQuery(authInfoQueryOptions);
     const [open, setOpen] = useState(false);
     const { mutate: deactivateAuth } = useMutation({
         mutationFn: async () =>
@@ -123,18 +123,21 @@ export const AuthContainer = () => {
         },
     });
 
-    if (isLoading)
+    if (isPending) {
         return (
             <Wrapper>
                 <MutedInfo text="Loading..." />
             </Wrapper>
         );
-    if (error)
+    }
+
+    if (error) {
         return (
             <Wrapper>
                 <MutedInfo text={error.message} />
             </Wrapper>
         );
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>

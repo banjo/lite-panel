@@ -1,12 +1,11 @@
+import { AuthLoginSchema } from "@/models/auth-login-schema";
+import { ConfigService } from "@/server/common/services/config-service";
+import { SecurityService } from "@/server/common/services/security-service";
 import { ServerService } from "@/server/common/services/server-service";
 import { createLogger } from "@/utils/logger";
+import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { ErrorResponse, SuccessResponse } from "../controller-model";
-import { ConfigService } from "@/server/common/services/config-service";
-import { zValidator } from "@hono/zod-validator";
-import { AuthLoginSchema } from "@/models/auth-login-schema";
-import { SecurityService } from "@/server/common/services/security-service";
-import { ActivateSchema } from "@/models/activation-schema";
 
 const logger = createLogger("server-controller");
 

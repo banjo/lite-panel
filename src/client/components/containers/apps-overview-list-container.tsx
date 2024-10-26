@@ -1,10 +1,10 @@
 import { allAppsQueryOptions } from "@/client/queries/app-overview-query";
 import { AppType } from "@/server/common/models/app-model";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { CardContainer } from "../shared/card-container";
 import { MutedInfo } from "../shared/muted-info";
 import { Badge } from "../ui/badge";
+import { useQuery } from "@tanstack/react-query";
 
 const appTypeTranslations: Record<AppType, string> = {
     DOCKER_COMPOSE: "Docker Compose",
@@ -18,12 +18,20 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 );
 
 export const AppsOverviewListContainer = () => {
-    const { data: apps, isLoading } = useSuspenseQuery(allAppsQueryOptions);
+    const { data: apps, isPending, error } = useQuery(allAppsQueryOptions);
 
-    if (isLoading) {
+    if (isPending) {
         return (
             <Wrapper>
                 <MutedInfo text="Loading..." />
+            </Wrapper>
+        );
+    }
+
+    if (error) {
+        return (
+            <Wrapper>
+                <MutedInfo text="Error loading apps" />
             </Wrapper>
         );
     }

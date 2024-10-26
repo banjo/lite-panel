@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus } from "lucide-react";
 import { AppsOverviewListContainer } from "../components/containers/apps-overview-list-container";
+import { AuthContainer } from "../components/containers/auth-container";
 import { ServerInformationContainer } from "../components/containers/server-information-container";
 import { Button } from "../components/ui/button";
 import { allAppsEnsureData } from "../queries/app-overview-query";
-import { systemInformationEnsureData } from "../queries/system-information-query";
 import { authInfoEnsureData } from "../queries/auth-info-query";
-import { AuthContainer } from "../components/containers/auth-container";
+import { systemInformationEnsureData } from "../queries/system-information-query";
 
 const Index = () => {
     return (
