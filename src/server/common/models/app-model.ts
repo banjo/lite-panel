@@ -1,11 +1,9 @@
+import { APP_TYPES, AppType } from "@/models/app-types-model";
 import { attempt, includes, merge } from "@banjoanton/utils";
 import { ApplicationWithReverseProxy } from "prisma/model";
 import { DirectoryService } from "../services/directory-service";
-import { APP_TYPES, AppType } from "@/models/app-types-model";
-
-export type DockerComposeMeta = {
-    composeFileContent: string;
-};
+import { ComposeMeta } from "@/models/create-compose-schema";
+import { BaseApp } from "@/models/base-app-schema";
 
 export type DockerfileMeta = {
     dockerfileContent: string;
@@ -21,22 +19,20 @@ export const AppProxy = {
     from: (proxy: AppProxy): AppProxy => proxy,
 };
 
-type BaseApp = {
-    name: string;
+type BaseAppWithoutPort = Omit<BaseApp, "port">;
+type BaseModel = BaseAppWithoutPort & {
     slug: string;
     directory: string;
-    domain: string;
     proxies: AppProxy[];
-    type: AppType;
     isRunning: boolean;
 };
 
-export type DockerComposeApp = BaseApp & {
+export type DockerComposeApp = BaseModel & {
     type: "DOCKER_COMPOSE";
-    meta: DockerComposeMeta;
+    meta: ComposeMeta;
 };
 
-export type DockerfileApp = BaseApp & {
+export type DockerfileApp = BaseModel & {
     type: "DOCKERFILE";
     meta: DockerfileMeta;
 };
