@@ -164,10 +164,13 @@ export const AuthContainer = () => {
                         </div>
                     </div>
 
-                    <div className="flex space-x-2">
+                    <div
+                        className="grid gap-2 mt-2"
+                        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))" }}
+                    >
                         {authInfo.isActive ? (
                             <DialogTrigger asChild>
-                                <Button variant="outline" className="flex-1">
+                                <Button variant="outline" className="w-full">
                                     <LockIcon className="mr-2 h-4 w-4" />
                                     Change
                                 </Button>
@@ -177,7 +180,7 @@ export const AuthContainer = () => {
                         {authInfo.isActive ? (
                             <Button
                                 variant="outline"
-                                className="flex-1"
+                                className="w-full"
                                 onClick={() => deactivateAuth()}
                             >
                                 <ShieldMinus className="mr-2 h-4 w-4" />
@@ -185,7 +188,7 @@ export const AuthContainer = () => {
                             </Button>
                         ) : (
                             <DialogTrigger asChild>
-                                <Button variant="outline" className="flex-1">
+                                <Button variant="outline" className="w-full">
                                     <ShieldPlus className="mr-2 h-4 w-4" />
                                     Activate
                                 </Button>

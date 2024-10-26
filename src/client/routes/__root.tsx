@@ -9,7 +9,7 @@ const RootComponent = () => {
     return (
         <>
             <AppSidebar />
-            <main>
+            <main className="w-full">
                 <SidebarTrigger />
                 <Outlet />
             </main>

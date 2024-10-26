@@ -17,17 +17,13 @@ const Index = () => {
                     <Plus className="mr-2 h-4 w-4" /> Create App
                 </Button>
             </header>
-            <div className="grid gap-6 md:grid-cols-1">
+            <div className="grid gap-6">
                 <div className="w-full">
                     <AppsOverviewListContainer />
                 </div>
-                <div className="flex gap-6 h-72">
-                    <div className="flex-1 h-full">
-                        <ServerInformationContainer />
-                    </div>
-                    <div className="flex-1 h-full">
-                        <AuthContainer />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+                    <ServerInformationContainer />
+                    <AuthContainer />
                 </div>
             </div>
         </div>
