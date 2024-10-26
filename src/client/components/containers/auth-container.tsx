@@ -4,7 +4,7 @@ import { AuthLogin, AuthLoginSchema } from "@/models/auth-login-schema";
 import { cn } from "@/utils/utils";
 import { Maybe, wrapAsync } from "@banjoanton/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { Frown, LockIcon, ShieldMinus, ShieldPlus, Smile } from "lucide-react";
 import { PropsWithChildren, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
@@ -24,6 +24,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "../ui/input";
 import toast from "react-hot-toast";
 import { queryClient } from "@/client/common/providers/query-provider";
+import { FetchService } from "@/client/common/services/fetch-service";
 
 type DialogContentContainerProps = {
     authInfo: {
@@ -42,22 +43,19 @@ const DialogContentContainer = ({ authInfo, setOpen }: DialogContentContainerPro
         },
     });
 
-    const onSubmit: SubmitHandler<AuthLogin> = async data => {
-        const [_, error] = await wrapAsync(async () => {
-            return await client.api.server.auth.$post({ json: data });
-        });
+    const { mutate: updateAuthInfo } = useMutation({
+        mutationFn: async (data: AuthLogin) =>
+            await FetchService.queryByClient(() => client.api.server.auth.$post({ json: data })),
+        onSuccess: async (_, { username }) => {
+            await queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
+            form.reset();
+            form.setValue("username", username);
+            toast.success("Successfully updated auth information");
+            setOpen(false);
+        },
+    });
 
-        if (error) {
-            toast.error(error.message);
-            return;
-        }
-
-        queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
-
-        setOpen(false);
-        form.reset();
-        toast.success("Successfully updated auth information");
-    };
+    const onSubmit: SubmitHandler<AuthLogin> = async data => updateAuthInfo(data);
 
     return (
         <DialogContent className="sm:max-w-[425px]">
@@ -80,7 +78,7 @@ const DialogContentContainer = ({ authInfo, setOpen }: DialogContentContainerPro
                                 <FormItem>
                                     <FormLabel>Username</FormLabel>
                                     <FormControl>
-                                        <Input defaultValue={authInfo.username} {...field} />
+                                        <Input {...field} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -116,6 +114,14 @@ const Wrapper = ({ children }: PropsWithChildren) => (
 export const AuthContainer = () => {
     const { data: authInfo, error, isLoading } = useSuspenseQuery(authInfoQueryOptions);
     const [open, setOpen] = useState(false);
+    const { mutate: deactivateAuth } = useMutation({
+        mutationFn: async () =>
+            await FetchService.queryByClient(() => client.api.server.auth.$delete()),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
+            toast.success("Successfully deactivated auth");
+        },
+    });
 
     if (isLoading)
         return (
@@ -126,23 +132,9 @@ export const AuthContainer = () => {
     if (error)
         return (
             <Wrapper>
-                <MutedInfo text="Ops, something went wrong" />
+                <MutedInfo text={error.message} />
             </Wrapper>
         );
-
-    const deactivateAuth = async () => {
-        const [_, error] = await wrapAsync(async () => {
-            return await client.api.server.auth.deactivate.$post();
-        });
-
-        if (error) {
-            toast.error(error.message);
-            return;
-        }
-
-        queryClient.invalidateQueries({ queryKey: authInfoQueryKey });
-        toast.success("Successfully deactivated auth");
-    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -180,7 +172,11 @@ export const AuthContainer = () => {
                         ) : null}
 
                         {authInfo.isActive ? (
-                            <Button variant="outline" className="flex-1" onClick={deactivateAuth}>
+                            <Button
+                                variant="outline"
+                                className="flex-1"
+                                onClick={() => deactivateAuth()}
+                            >
                                 <ShieldMinus className="mr-2 h-4 w-4" />
                                 Deactivate
                             </Button>

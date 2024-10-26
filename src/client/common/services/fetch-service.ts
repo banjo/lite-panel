@@ -4,7 +4,7 @@ import { ClientResponse } from "hono/client";
 import { ApiError } from "../models/api-error";
 import toast from "react-hot-toast";
 
-const queryByClient = async <TResponse extends () => Promise<ClientResponse<any>>>(
+const queryByClient = async <T, TResponse extends () => Promise<ClientResponse<T>>>(
     callback: TResponse
 ): Promise<Awaited<InferResponseType<TResponse, 200>>> => {
     const res = await callback();

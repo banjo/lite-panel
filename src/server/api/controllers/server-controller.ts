@@ -54,7 +54,7 @@ export const serverController = new Hono()
 
         return SuccessResponse(c, { message: "Successfully updated auth information" });
     })
-    .post("/auth/deactivate", async c => {
+    .delete("/auth", async c => {
         logger.info("Received request to update basic auth status");
 
         const updateResult = await SecurityService.deactivateAuth();
