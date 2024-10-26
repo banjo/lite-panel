@@ -17,6 +17,7 @@ import { Input } from "../components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Button } from "../components/ui/button";
 import { Textarea } from "../components/ui/textarea";
+import { CreateDockerfileApp, CreateDockerfileAppSchema } from "@/models/create-dockerfile-schema";
 
 const Wrapper = ({ children, title, description }: CardContainerProps) => (
     <CardContainer title={title} description={description}>
@@ -97,10 +98,7 @@ const CreateComposeContainer = () => {
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
-                <Wrapper
-                    title="Compose"
-                    description="An application created by with Docker Compose."
-                >
+                <Wrapper title="Compose" description="An application created with Docker Compose.">
                     <div className="space-y-4">
                         <BaseAppForm form={form} />
 
@@ -131,6 +129,51 @@ const CreateComposeContainer = () => {
     );
 };
 
+const CreateDockerfileContainer = () => {
+    const form = useForm<CreateDockerfileApp>({
+        resolver: zodResolver(CreateDockerfileAppSchema),
+        defaultValues: {
+            type: "DOCKERFILE",
+            port: 0,
+            name: "",
+            domain: "",
+            DockerfileContent: "",
+        },
+    });
+
+    const onSubmit: SubmitHandler<CreateDockerfileApp> = async data => console.log(data);
+    return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+                <Wrapper title="Dockerfile" description="An application created with a Dockerfile.">
+                    <div className="space-y-4">
+                        <BaseAppForm form={form} />
+
+                        <FormField
+                            control={form.control}
+                            name="DockerfileContent"
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Dockerfile</FormLabel>
+                                    <FormControl>
+                                        <Textarea {...field} />
+                                    </FormControl>
+                                    <FormDescription>The content of the Dockerfile</FormDescription>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+                    </div>
+
+                    <div className="flex w-full justify-end mt-8">
+                        <Button type="submit">Create</Button>
+                    </div>
+                </Wrapper>
+            </form>
+        </Form>
+    );
+};
+
 const Create = () => {
     return (
         <div className="container mx-auto p-4">
@@ -140,9 +183,13 @@ const Create = () => {
             <Tabs defaultValue="compose" className="w-[400px]">
                 <TabsList>
                     <TabsTrigger value="compose">Compose</TabsTrigger>
+                    <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
                 </TabsList>
                 <TabsContent value="compose">
                     <CreateComposeContainer />
+                </TabsContent>
+                <TabsContent value="dockerfile">
+                    <CreateDockerfileContainer />
                 </TabsContent>
             </Tabs>
         </div>

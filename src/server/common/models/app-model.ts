@@ -1,13 +1,10 @@
-import { APP_TYPES, AppType } from "@/models/app-types-model";
+import { APP_TYPES } from "@/models/app-types-model";
+import { BaseApp } from "@/models/base-app-schema";
+import { ComposeMeta } from "@/models/create-compose-schema";
 import { attempt, includes, merge } from "@banjoanton/utils";
 import { ApplicationWithReverseProxy } from "prisma/model";
 import { DirectoryService } from "../services/directory-service";
-import { ComposeMeta } from "@/models/create-compose-schema";
-import { BaseApp } from "@/models/base-app-schema";
-
-export type DockerfileMeta = {
-    dockerfileContent: string;
-};
+import { DockerfileMeta } from "@/models/create-dockerfile-schema";
 
 export type AppProxy = {
     port: number;
