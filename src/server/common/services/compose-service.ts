@@ -1,17 +1,18 @@
 import { createLogger } from "@/utils/logger";
-import { App, DockerComposeApp, DockerComposeMeta } from "../models/app-model";
+import { App, DockerComposeApp } from "../models/app-model";
 import { AppService, CreateAppProps } from "./app-service";
 import { Result } from "@/utils/result";
 import { DockerShellService } from "./docker-shell-service";
 import { CaddyService } from "./caddy-service";
 import fs from "fs-extra";
 import { wrapAsync } from "@banjoanton/utils";
+import { ComposeMeta } from "@/models/create-compose-schema";
 
 const logger = createLogger("compose-service");
 
 type CreateDockerComposeAppProps = CreateAppProps & {
     type: "DOCKER_COMPOSE";
-    meta: DockerComposeMeta;
+    meta: ComposeMeta;
 };
 
 const saveComposeFile = async (app: DockerComposeApp) => {

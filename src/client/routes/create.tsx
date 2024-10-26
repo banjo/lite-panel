@@ -28,59 +28,57 @@ const Wrapper = ({ children, title, description }: CardContainerProps) => (
 type BaseAppFormProps<T> = {
     form: T;
 };
-const BaseAppForm = <T extends ReturnType<typeof useForm<any>>>({ form }: BaseAppFormProps<T>) => {
-    return (
-        <>
-            <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>The name of the application</FormDescription>
-                    </FormItem>
-                )}
-            />
+const BaseAppForm = <T extends ReturnType<typeof useForm<any>>>({ form }: BaseAppFormProps<T>) => (
+    <>
+        <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                        <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>The name of the application</FormDescription>
+                </FormItem>
+            )}
+        />
 
-            <FormField
-                control={form.control}
-                name="domain"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Domain</FormLabel>
-                        <FormControl>
-                            <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>No HTTPS (e.g. example.com)</FormDescription>
-                    </FormItem>
-                )}
-            />
+        <FormField
+            control={form.control}
+            name="domain"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Domain</FormLabel>
+                    <FormControl>
+                        <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>No HTTPS (e.g. example.com)</FormDescription>
+                </FormItem>
+            )}
+        />
 
-            <FormField
-                control={form.control}
-                name="port"
-                render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Port</FormLabel>
-                        <FormControl>
-                            <Input type="number" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                        <FormDescription>
-                            Which port the application should use locally and connect to the SSL
-                            certificate
-                        </FormDescription>
-                    </FormItem>
-                )}
-            />
-        </>
-    );
-};
+        <FormField
+            control={form.control}
+            name="port"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Port</FormLabel>
+                    <FormControl>
+                        <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    <FormDescription>
+                        Which port the application should use locally and connect to the SSL
+                        certificate
+                    </FormDescription>
+                </FormItem>
+            )}
+        />
+    </>
+);
 
 const CreateComposeContainer = () => {
     const form = useForm<CreateComposeApp>({
@@ -174,27 +172,25 @@ const CreateDockerfileContainer = () => {
     );
 };
 
-const Create = () => {
-    return (
-        <div className="container mx-auto p-4">
-            <header className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold">Create application</h1>
-            </header>
-            <Tabs defaultValue="compose" className="w-[400px]">
-                <TabsList>
-                    <TabsTrigger value="compose">Compose</TabsTrigger>
-                    <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
-                </TabsList>
-                <TabsContent value="compose">
-                    <CreateComposeContainer />
-                </TabsContent>
-                <TabsContent value="dockerfile">
-                    <CreateDockerfileContainer />
-                </TabsContent>
-            </Tabs>
-        </div>
-    );
-};
+const Create = () => (
+    <div className="container mx-auto p-4">
+        <header className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold">Create application</h1>
+        </header>
+        <Tabs defaultValue="compose" className="w-[400px]">
+            <TabsList>
+                <TabsTrigger value="compose">Compose</TabsTrigger>
+                <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
+            </TabsList>
+            <TabsContent value="compose">
+                <CreateComposeContainer />
+            </TabsContent>
+            <TabsContent value="dockerfile">
+                <CreateDockerfileContainer />
+            </TabsContent>
+        </Tabs>
+    </div>
+);
 
 export const Route = createFileRoute("/create")({
     component: Create,

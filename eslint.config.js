@@ -1,10 +1,12 @@
-import eslintConfig from "@banjoanton/eslint-config";
+import defaultConfig from "@banjoanton/eslint-config";
 
 export default [
-    ...eslintConfig,
+    ...defaultConfig,
     {
         rules: {
             "@typescript-eslint/no-empty-object-type": "off",
+            "react/forbid-component-props": "off",
+            "no-redeclare": "off",
         },
     },
 ];
