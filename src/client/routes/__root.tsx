@@ -1,16 +1,18 @@
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { SideMenuContainer } from "../components/containers/side-menu-container";
+import { AppSidebar } from "../components/shared/sidebar";
+import { SidebarTrigger } from "../components/ui/sidebar";
 
 const RootComponent = () => {
     // @ts-ignore - Vite injects the env, but Env does not work here for some reason
     const isDev = import.meta.env?.DEV;
     return (
         <>
-            <div className="flex">
-                <SideMenuContainer />
+            <AppSidebar />
+            <main>
+                <SidebarTrigger />
                 <Outlet />
-            </div>
+            </main>
             {isDev ? <TanStackRouterDevtools /> : null}
         </>
     );
