@@ -1,4 +1,4 @@
-# Lite panel
+# Litepanel
 
 A simple UI to control your self hosted VPS.
 

@@ -29,7 +29,7 @@ if (isProduction) {
                     <head>
                         <meta charSet="utf-8" />
                         <meta content="width=device-width, initial-scale=1" name="viewport" />
-                        <title>Lite panel</title>
+                        <title>Litepanel</title>
                         <script type="module" src="/assets/client.js" />
                         <link rel="stylesheet" href="/assets/style.css" />
                     </head>
