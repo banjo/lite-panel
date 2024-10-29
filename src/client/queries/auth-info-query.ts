@@ -7,7 +7,7 @@ export const authInfoQueryKey = ["auth-info"];
 
 export const authInfoQueryOptions = queryOptions({
     queryKey: authInfoQueryKey,
-    queryFn: async () => await FetchService.queryByClient(() => client.api.server.auth.$get()),
+    queryFn: async () => await FetchService.queryByClient(client.api.server.auth.$get),
 });
 
 export const authInfoEnsureData = async () =>

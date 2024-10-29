@@ -7,7 +7,7 @@ export const systemInformationQueryKey = ["system-information"];
 
 export const systemInformationQueryOptions = queryOptions({
     queryKey: systemInformationQueryKey,
-    queryFn: async () => await FetchService.queryByClient(() => client.api.server.info.$get()),
+    queryFn: async () => await FetchService.queryByClient(client.api.server.info.$get),
 });
 
 export const systemInformationEnsureData = async () =>

@@ -7,7 +7,7 @@ export const allAppsQueryKey = ["apps"];
 
 export const allAppsQueryOptions = queryOptions({
     queryKey: allAppsQueryKey,
-    queryFn: async () => await FetchService.queryByClient(() => client.api.apps.$get()),
+    queryFn: async () => await FetchService.queryByClient(client.api.apps.$get),
 });
 
 export const allAppsEnsureData = async () => await queryClient.ensureQueryData(allAppsQueryOptions);

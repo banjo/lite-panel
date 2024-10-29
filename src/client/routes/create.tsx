@@ -5,6 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { CardContainer, CardContainerProps } from "../components/shared/card-container";
 import { Button } from "../components/ui/button";
+import { toast } from "react-hot-toast";
 import {
     Form,
     FormControl,
@@ -17,6 +18,12 @@ import {
 import { Input } from "../components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Textarea } from "../components/ui/textarea";
+import { useMutation } from "@tanstack/react-query";
+import { FetchService } from "../common/services/fetch-service";
+import { client } from "../client";
+import { queryClient } from "../common/providers/query-provider";
+import { allAppsQueryKey } from "../queries/app-overview-query";
+import { useLoading } from "../common/providers/global-loading-provider";
 
 const Wrapper = ({ children, title, description }: CardContainerProps) => (
     <CardContainer title={title} description={description}>
@@ -91,7 +98,37 @@ const CreateComposeContainer = () => {
         },
     });
 
-    const onSubmit: SubmitHandler<CreateComposeApp> = async data => console.log(data);
+    const { setLoading } = useLoading();
+
+    const dockerCompose = useMutation({
+        mutationFn: async (data: CreateComposeApp) => {
+            await FetchService.queryByClient(() =>
+                client.api.compose.create.$post({
+                    json: {
+                        name: data.name,
+                        domain: data.domain,
+                        dockerComposeContent: data.composeFileContent,
+                        ports: [data.port],
+                    },
+                })
+            );
+        },
+        onMutate: () => {
+            setLoading(true, "Creating application...");
+        },
+        onSuccess: async (_, data) => {
+            queryClient.invalidateQueries({ queryKey: allAppsQueryKey });
+            toast.success(`Application ${data.name} created`);
+            form.reset();
+            // TODO: go to app
+        },
+        onSettled: () => {
+            setLoading(false);
+        },
+    });
+
+    const onSubmit: SubmitHandler<CreateComposeApp> = async data => dockerCompose.mutate(data);
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>

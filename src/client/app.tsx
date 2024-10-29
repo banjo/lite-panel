@@ -6,6 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 import { routeTree } from "./routeTree.gen";
 import { SidebarProvider } from "./components/ui/sidebar";
+import { GlobalLoadingProvider } from "./common/providers/global-loading-provider";
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
@@ -16,10 +17,12 @@ declare module "@tanstack/react-router" {
 
 const App = () => (
     <QueryProvider>
-        <SidebarProvider>
-            <Toaster position="bottom-right" />
-            <RouterProvider router={router} />
-        </SidebarProvider>
+        <GlobalLoadingProvider>
+            <SidebarProvider>
+                <Toaster position="bottom-right" />
+                <RouterProvider router={router} />
+            </SidebarProvider>
+        </GlobalLoadingProvider>
     </QueryProvider>
 );
 
