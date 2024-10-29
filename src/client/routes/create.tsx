@@ -1,11 +1,16 @@
 import { CreateComposeApp, CreateComposeAppSchema } from "@/models/create-compose-schema";
 import { CreateDockerfileApp, CreateDockerfileAppSchema } from "@/models/create-dockerfile-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
+import { client } from "../client";
+import { queryClient } from "../common/providers/query-provider";
+import { FetchService } from "../common/services/fetch-service";
 import { CardContainer, CardContainerProps } from "../components/shared/card-container";
 import { Button } from "../components/ui/button";
-import { toast } from "react-hot-toast";
 import {
     Form,
     FormControl,
@@ -18,12 +23,7 @@ import {
 import { Input } from "../components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { Textarea } from "../components/ui/textarea";
-import { useMutation } from "@tanstack/react-query";
-import { FetchService } from "../common/services/fetch-service";
-import { client } from "../client";
-import { queryClient } from "../common/providers/query-provider";
 import { allAppsQueryKey } from "../queries/app-overview-query";
-import { useLoading } from "../common/providers/global-loading-provider";
 
 const Wrapper = ({ children, title, description }: CardContainerProps) => (
     <CardContainer title={title} description={description}>
@@ -98,7 +98,7 @@ const CreateComposeContainer = () => {
         },
     });
 
-    const { setLoading } = useLoading();
+    const [isLoading, setIsLoading] = useState(false);
 
     const dockerCompose = useMutation({
         mutationFn: async (data: CreateComposeApp) => {
@@ -114,7 +114,7 @@ const CreateComposeContainer = () => {
             );
         },
         onMutate: () => {
-            setLoading(true, "Creating application...");
+            setIsLoading(true);
         },
         onSuccess: async (_, data) => {
             queryClient.invalidateQueries({ queryKey: allAppsQueryKey });
@@ -123,7 +123,7 @@ const CreateComposeContainer = () => {
             // TODO: go to app
         },
         onSettled: () => {
-            setLoading(false);
+            setIsLoading(false);
         },
     });
 
@@ -155,7 +155,9 @@ const CreateComposeContainer = () => {
                     </div>
 
                     <div className="flex w-full justify-end mt-8">
-                        <Button type="submit">Create</Button>
+                        <Button isLoading={isLoading} type="submit">
+                            Create
+                        </Button>
                     </div>
                 </Wrapper>
             </form>

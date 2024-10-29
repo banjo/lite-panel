@@ -6,22 +6,25 @@ type Props = {
     text: Maybe<string>;
 };
 
-export const Loader = ({ children }: PropsWithChildren) => (
-    <div className="fixed left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center gap-4 backdrop-blur-sm">
-        <div
-            className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
-            role="status"
-        />
-        <span>{children}</span>
-    </div>
+export const Spinner = ({ radius = "3rem" }: { radius?: string }) => (
+    <div
+        className="inline-block animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"
+        style={{ height: radius, width: radius }}
+        role="status"
+    />
 );
 
-export const GlobalLoading = ({ isLoading, text }: Props) => {
+export const FullScreenLoading = ({ isLoading, text }: Props) => {
     if (!isLoading) {
         return null;
     }
 
-    return <Loader>{text}</Loader>;
+    return (
+        <div className="fixed left-0 top-0 z-50 flex h-full w-full flex-col items-center justify-center gap-4 backdrop-blur-sm">
+            <Spinner />
+            <span>{text}</span>
+        </div>
+    );
 };
 
 export type LoadingType = {
@@ -42,7 +45,7 @@ export const GlobalLoadingProvider = ({ children }: PropsWithChildren) => {
 
     return (
         <LoadingContext.Provider value={{ isLoading: isLoadingGlobal, setLoading }}>
-            <GlobalLoading isLoading={isLoadingGlobal} text={textGlobal} />
+            <FullScreenLoading isLoading={isLoadingGlobal} text={textGlobal} />
             {children}
         </LoadingContext.Provider>
     );
