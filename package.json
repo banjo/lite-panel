@@ -68,7 +68,7 @@
         "zod-validation-error": "^3.4.0"
     },
     "devDependencies": {
-        "@banjoanton/eslint-config": "^0.2.16",
+        "@banjoanton/eslint-config": "^0.2.17",
         "@dotenvx/dotenvx": "^1.19.0",
         "@tanstack/router-devtools": "^1.64.3",
         "@tanstack/router-plugin": "^1.64.0",
