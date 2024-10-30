@@ -98,8 +98,6 @@ const CreateComposeContainer = () => {
         },
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-
     const dockerCompose = useMutation({
         mutationFn: async (data: CreateComposeApp) => {
             await FetchService.queryByClient(() =>
@@ -113,17 +111,11 @@ const CreateComposeContainer = () => {
                 })
             );
         },
-        onMutate: () => {
-            setIsLoading(true);
-        },
         onSuccess: async (_, data) => {
             queryClient.invalidateQueries({ queryKey: allAppsQueryKey });
             toast.success(`Application ${data.name} created`);
             form.reset();
             // TODO: go to app
-        },
-        onSettled: () => {
-            setIsLoading(false);
         },
     });
 
@@ -155,7 +147,7 @@ const CreateComposeContainer = () => {
                     </div>
 
                     <div className="flex w-full justify-end mt-8">
-                        <Button isLoading={isLoading} type="submit">
+                        <Button isLoading={dockerCompose.isPending} type="submit">
                             Create
                         </Button>
                     </div>
@@ -218,14 +210,14 @@ const Create = () => (
         <Tabs defaultValue="compose" className="w-[400px]">
             <TabsList>
                 <TabsTrigger value="compose">Compose</TabsTrigger>
-                <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger>
+                {/* <TabsTrigger value="dockerfile">Dockerfile</TabsTrigger> */}
             </TabsList>
             <TabsContent value="compose">
                 <CreateComposeContainer />
             </TabsContent>
-            <TabsContent value="dockerfile">
-                <CreateDockerfileContainer />
-            </TabsContent>
+            {/* <TabsContent value="dockerfile"> */}
+            {/*     <CreateDockerfileContainer /> */}
+            {/* </TabsContent> */}
         </Tabs>
     </div>
 );
