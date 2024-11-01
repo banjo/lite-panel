@@ -19,6 +19,11 @@ export const queryClient = new QueryClient({
             retry: 2,
             refetchOnWindowFocus: true,
         },
+        mutations: {
+            onError: (error: Error) => {
+                toast.error(error.message);
+            },
+        },
     },
 });
 
