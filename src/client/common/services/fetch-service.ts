@@ -2,7 +2,6 @@ import { ControllerErrorData } from "@/server/api/controller-model";
 import { InferResponseType } from "hono";
 import { ClientResponse } from "hono/client";
 import { ApiError } from "../models/api-error";
-import toast from "react-hot-toast";
 
 const queryByClient = async <T, TResponse extends () => Promise<ClientResponse<T>>>(
     callback: TResponse
@@ -10,7 +9,6 @@ const queryByClient = async <T, TResponse extends () => Promise<ClientResponse<T
     const res = await callback();
     if (res.status !== 200) {
         const errorData: ControllerErrorData = (await res.json()) as ControllerErrorData;
-        toast.error(errorData.message);
         if (res.status === 404) {
             throw new ApiError(errorData.message, "NOT_FOUND");
         } else if (res.status === 401) {
