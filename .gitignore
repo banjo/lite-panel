@@ -8,3 +8,4 @@ build
 .dev-files
 dev.db*
 rest
+playground.ts

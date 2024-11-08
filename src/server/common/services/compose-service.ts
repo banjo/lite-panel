@@ -69,6 +69,7 @@ const createApp = async (createAppProps: CreateDockerComposeAppProps) => {
         return Result.error(composeFileResult.message);
     }
 
+    // TODO: if it fails, remove the running port (or do not set the app to "running" state)
     const startResult = await DockerShellService.startCompose({ path: app.directory });
 
     if (!startResult.success) {
