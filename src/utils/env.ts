@@ -37,6 +37,7 @@ const ServerEnvSchema = z.object({
         .default("development"),
     LOG_LEVEL: logLevelSchema,
     DATABASE_URL: z.string(),
+    DOCKER_SOCKET: z.string().default("/var/run/docker.sock"),
 });
 
 const server = () => {

@@ -4,8 +4,10 @@ import { AsyncResultType, isEmpty, last, Maybe, wrapAsync } from "@banjoanton/ut
 import { ShellService } from "./shell-service";
 import Dockerode, { ContainerInfo } from "dockerode";
 import { AppService } from "./app-service";
+import { Env } from "@/utils/env";
 
 const logger = createLogger("docker-shell-service");
+const env = Env.server();
 
 const handleComposeResponse = (response: string) => {
     const lines = response.split("\n");
@@ -36,11 +38,14 @@ const handleComposeResponse = (response: string) => {
     };
 };
 
-const docker = new Dockerode();
+const docker = new Dockerode({
+    socketPath: env.DOCKER_SOCKET,
+});
+
+logger.info(`INIT: Docker socket path: ${env.DOCKER_SOCKET}`);
 
 const listContainers = async () => {
     const [containers, error] = await wrapAsync(async () => await docker.listContainers());
-    console.dir(containers, { depth: null });
 
     if (error) {
         logger.error({ error }, "Could not get current docker containers");
